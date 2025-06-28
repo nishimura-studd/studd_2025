@@ -1,38 +1,60 @@
 export default function Work() {
   return (
-    <div className="min-h-screen p-8">
-      <main className="max-w-6xl mx-auto">
-        <h1 className="text-4xl font-bold mb-8">Work</h1>
-        
-        <section className="mb-8">
-          <h2 className="text-xl font-semibold mb-4">Filter</h2>
-          <div className="flex flex-wrap gap-2">
-            <button className="px-4 py-2 border rounded-md hover:bg-gray-100">All</button>
-            <button className="px-4 py-2 border rounded-md hover:bg-gray-100">React</button>
-            <button className="px-4 py-2 border rounded-md hover:bg-gray-100">Next.js</button>
-            <button className="px-4 py-2 border rounded-md hover:bg-gray-100">Three.js</button>
+    <div className="min-h-screen">
+      <section className="swiss-section" style={{paddingLeft: '200px'}}>
+        <div className="max-w-4xl px-8">
+          <h1 className="mb-16">Work</h1>
+          
+          <div className="mb-12">
+            <h2 className="mb-6">Filter</h2>
+            <div className="flex flex-wrap gap-4">
+              <button className="swiss-button">All</button>
+              <button className="swiss-button">React</button>
+              <button className="swiss-button">Next.js</button>
+              <button className="swiss-button">Three.js</button>
+            </div>
           </div>
-        </section>
 
-        <section>
-          <h2 className="text-xl font-semibold mb-6">Projects</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="border rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
-              <div className="aspect-video bg-gray-200 flex items-center justify-center">
-                <span className="text-gray-500">Project Image</span>
+          <div>
+            <h2 className="mb-8">Projects</h2>
+            <div className="swiss-line mb-8" style={{height: '2px'}}></div>
+            <div className="border border-black">
+              <div className="border-b border-black p-6">
+                <div className="flex justify-between items-center mb-3">
+                  <h3 className="text-xl font-bold">プロジェクト1</h3>
+                  <span className="font-mono text-sm">2024</span>
+                </div>
+                <div className="flex gap-2">
+                  <span className="border border-black px-3 py-1 text-xs font-mono uppercase">React</span>
+                  <span className="border border-black px-3 py-1 text-xs font-mono uppercase">Next.js</span>
+                </div>
               </div>
-              <div className="p-4">
-                <h3 className="font-semibold mb-2">プロジェクト1</h3>
-                <p className="text-sm text-gray-600 mb-3">2024</p>
-                <div className="flex flex-wrap gap-1">
-                  <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">React</span>
-                  <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded">Next.js</span>
+
+              <div className="border-b border-black p-6">
+                <div className="flex justify-between items-center mb-3">
+                  <h3 className="text-xl font-bold">プロジェクト2</h3>
+                  <span className="font-mono text-sm">2024</span>
+                </div>
+                <div className="flex gap-2">
+                  <span className="border border-black px-3 py-1 text-xs font-mono uppercase">Three.js</span>
+                  <span className="border border-black px-3 py-1 text-xs font-mono uppercase">WebGL</span>
+                </div>
+              </div>
+
+              <div className="p-6">
+                <div className="flex justify-between items-center mb-3">
+                  <h3 className="text-xl font-bold">プロジェクト3</h3>
+                  <span className="font-mono text-sm">2023</span>
+                </div>
+                <div className="flex gap-2">
+                  <span className="border border-black px-3 py-1 text-xs font-mono uppercase">Vue.js</span>
+                  <span className="border border-black px-3 py-1 text-xs font-mono uppercase">TypeScript</span>
                 </div>
               </div>
             </div>
           </div>
-        </section>
-      </main>
+        </div>
+      </section>
     </div>
   );
 }

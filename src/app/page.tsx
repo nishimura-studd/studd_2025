@@ -1,14 +1,17 @@
 export default function Home() {
   return (
     <div className="min-h-screen">
-      <main>
-        <section className="h-screen flex items-center justify-center">
-          <div className="text-center">
-            <h1 className="text-4xl font-bold mb-4">Portfolio</h1>
-            <p className="text-lg text-gray-600">3D WebGL visual will be implemented here</p>
+      <section className="swiss-section h-screen flex items-center">
+        <div className="swiss-grid w-full">
+          <div className="col-span-12 md:col-span-8 md:col-start-3">
+            <div className="text-center">
+              <p className="text-lg font-mono uppercase tracking-wider text-gray-600">
+                3D WebGL Visual Implementation
+              </p>
+            </div>
           </div>
-        </section>
-      </main>
+        </div>
+      </section>
     </div>
   );
 }
