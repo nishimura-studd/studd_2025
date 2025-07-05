@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import type { Work } from '@/lib/supabase'
 import { getAllWorks } from '@/lib/works'
 import WorkItem from '@/app/components/WorkItem'
@@ -9,6 +9,7 @@ export default function WorkPage() {
   const [works, setWorks] = useState<Work[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [selectedSkill, setSelectedSkill] = useState<string>('all')
 
   useEffect(() => {
     async function fetchWorks() {
@@ -26,6 +27,23 @@ export default function WorkPage() {
 
     fetchWorks()
   }, [])
+
+  // 全スキルの一覧を生成
+  const allSkills = useMemo(() => {
+    const skillSet = new Set<string>()
+    works.forEach(work => {
+      work.skills.forEach(skill => skillSet.add(skill))
+    })
+    return Array.from(skillSet).sort()
+  }, [works])
+
+  // フィルタリングされた作品リスト
+  const filteredWorks = useMemo(() => {
+    if (selectedSkill === 'all') {
+      return works
+    }
+    return works.filter(work => work.skills.includes(selectedSkill))
+  }, [works, selectedSkill])
 
   if (loading) {
     return (
@@ -67,21 +85,63 @@ export default function WorkPage() {
           </p>
         </header>
 
-        {works.length === 0 ? (
+        {/* スキルフィルター */}
+        {allSkills.length > 0 && (
+          <div className="mb-8">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">スキルで絞り込み</h2>
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={() => setSelectedSkill('all')}
+                className={`px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                  selectedSkill === 'all'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                }`}
+              >
+                すべて ({works.length})
+              </button>
+              {allSkills.map((skill) => {
+                const count = works.filter(work => work.skills.includes(skill)).length
+                return (
+                  <button
+                    key={skill}
+                    onClick={() => setSelectedSkill(skill)}
+                    className={`px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                      selectedSkill === skill
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    }`}
+                  >
+                    {skill} ({count})
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        )}
+
+        {filteredWorks.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-gray-500">作品がありません</p>
+            <p className="text-gray-500">
+              {selectedSkill === 'all' ? '作品がありません' : `${selectedSkill}の作品がありません`}
+            </p>
           </div>
         ) : (
           <div className="grid gap-6">
-            {works.map((work) => (
+            {filteredWorks.map((work) => (
               <WorkItem key={work.id} work={work} />
             ))}
           </div>
         )}
 
         <footer className="mt-12 text-center text-sm text-gray-500">
-          {works.length > 0 && (
-            <p>{works.length}件の作品を表示しています</p>
+          {filteredWorks.length > 0 && (
+            <p>
+              {selectedSkill === 'all' 
+                ? `${filteredWorks.length}件の作品を表示しています`
+                : `${selectedSkill}: ${filteredWorks.length}件の作品を表示しています`
+              }
+            </p>
           )}
         </footer>
       </div>
