@@ -1,60 +1,90 @@
-export default function Work() {
-  return (
-    <div className="min-h-screen">
-      <section className="swiss-section" style={{paddingLeft: '200px'}}>
-        <div className="max-w-4xl px-8">
-          <h1 className="mb-16">Work</h1>
-          
-          <div className="mb-12">
-            <h2 className="mb-6">Filter</h2>
-            <div className="flex flex-wrap gap-4">
-              <button className="swiss-button">All</button>
-              <button className="swiss-button">React</button>
-              <button className="swiss-button">Next.js</button>
-              <button className="swiss-button">Three.js</button>
-            </div>
-          </div>
+'use client'
 
-          <div>
-            <h2 className="mb-8">Projects</h2>
-            <div className="swiss-line mb-8" style={{height: '2px'}}></div>
-            <div className="border border-black">
-              <div className="border-b border-black p-6">
-                <div className="flex justify-between items-center mb-3">
-                  <h3 className="text-xl font-bold">プロジェクト1</h3>
-                  <span className="font-mono text-sm">2024</span>
-                </div>
-                <div className="flex gap-2">
-                  <span className="border border-black px-3 py-1 text-xs font-mono uppercase">React</span>
-                  <span className="border border-black px-3 py-1 text-xs font-mono uppercase">Next.js</span>
-                </div>
-              </div>
+import { useEffect, useState } from 'react'
+import type { Work } from '@/lib/supabase'
+import { getAllWorks } from '@/lib/works'
+import WorkItem from '@/app/components/WorkItem'
 
-              <div className="border-b border-black p-6">
-                <div className="flex justify-between items-center mb-3">
-                  <h3 className="text-xl font-bold">プロジェクト2</h3>
-                  <span className="font-mono text-sm">2024</span>
-                </div>
-                <div className="flex gap-2">
-                  <span className="border border-black px-3 py-1 text-xs font-mono uppercase">Three.js</span>
-                  <span className="border border-black px-3 py-1 text-xs font-mono uppercase">WebGL</span>
-                </div>
-              </div>
+export default function WorkPage() {
+  const [works, setWorks] = useState<Work[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-              <div className="p-6">
-                <div className="flex justify-between items-center mb-3">
-                  <h3 className="text-xl font-bold">プロジェクト3</h3>
-                  <span className="font-mono text-sm">2023</span>
-                </div>
-                <div className="flex gap-2">
-                  <span className="border border-black px-3 py-1 text-xs font-mono uppercase">Vue.js</span>
-                  <span className="border border-black px-3 py-1 text-xs font-mono uppercase">TypeScript</span>
-                </div>
-              </div>
+  useEffect(() => {
+    async function fetchWorks() {
+      try {
+        setLoading(true)
+        const data = await getAllWorks()
+        setWorks(data)
+      } catch (err) {
+        setError('作品データの取得に失敗しました')
+        console.error(err)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchWorks()
+  }, [])
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 py-8">
+        <div className="max-w-4xl mx-auto px-4">
+          <div className="animate-pulse space-y-6">
+            <div className="h-8 bg-gray-200 rounded w-48"></div>
+            <div className="grid gap-6">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="h-32 bg-gray-200 rounded-lg"></div>
+              ))}
             </div>
           </div>
         </div>
-      </section>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 py-8">
+        <div className="max-w-4xl mx-auto px-4">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">エラー</h1>
+            <p className="text-gray-600">{error}</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="max-w-4xl mx-auto px-4">
+        <header className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">Works</h1>
+          <p className="text-gray-600 mt-2">
+            これまでに携わったプロジェクトの一覧です
+          </p>
+        </header>
+
+        {works.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-gray-500">作品がありません</p>
+          </div>
+        ) : (
+          <div className="grid gap-6">
+            {works.map((work) => (
+              <WorkItem key={work.id} work={work} />
+            ))}
+          </div>
+        )}
+
+        <footer className="mt-12 text-center text-sm text-gray-500">
+          {works.length > 0 && (
+            <p>{works.length}件の作品を表示しています</p>
+          )}
+        </footer>
+      </div>
     </div>
-  );
+  )
 }
