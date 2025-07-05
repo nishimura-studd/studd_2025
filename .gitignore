@@ -42,3 +42,6 @@ next-env.d.ts
 
 # img source
 /imgsrc
+
+# data files (SQL schema, CSV data)
+/data
