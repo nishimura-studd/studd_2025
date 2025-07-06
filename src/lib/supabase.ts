@@ -16,4 +16,5 @@ export type Work = {
   project_url: string | null
   created_at: string
   updated_at: string
+  is_masked?: boolean
 }

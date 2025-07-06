@@ -3,7 +3,8 @@
 import { useEffect, useState, use } from 'react'
 import { useRouter } from 'next/navigation'
 import type { Work } from '@/lib/supabase'
-import { getWorkById } from '@/lib/works'
+import { getPublicWorkByIdAPI, getWorkByIdAPI } from '@/lib/api'
+import { useAuth } from '@/contexts/AuthContext'
 import { extractStartYear } from '@/lib/utils'
 
 interface WorkDetailProps {
@@ -18,12 +19,15 @@ export default function WorkDetail({ params }: WorkDetailProps) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
+  const { isAuthenticated } = useAuth()
 
   useEffect(() => {
     async function fetchWork() {
       try {
         setLoading(true)
-        const data = await getWorkById(resolvedParams.id)
+        const data = isAuthenticated 
+          ? await getWorkByIdAPI(resolvedParams.id)
+          : await getPublicWorkByIdAPI(resolvedParams.id)
         if (!data) {
           setError('作品が見つかりませんでした')
           return
@@ -38,7 +42,7 @@ export default function WorkDetail({ params }: WorkDetailProps) {
     }
 
     fetchWork()
-  }, [resolvedParams.id])
+  }, [resolvedParams.id, isAuthenticated])
 
   if (loading) {
     return (
@@ -98,7 +102,14 @@ export default function WorkDetail({ params }: WorkDetailProps) {
         {/* ヘッダー */}
         <header className="mb-8">
           <div className="flex items-start justify-between gap-4 mb-4">
-            <h1 className="text-3xl font-bold text-gray-900">{work.title}</h1>
+            <div className="flex items-center gap-3">
+              <h1 className="text-3xl font-bold text-gray-900">{work.title}</h1>
+              {work.is_masked && (
+                <span className="px-3 py-1 text-sm font-medium bg-orange-100 text-orange-800 rounded-md">
+                  Limited Access
+                </span>
+              )}
+            </div>
             {startYear && (
               <span className="text-lg text-gray-500 font-medium shrink-0">{startYear}</span>
             )}

@@ -2,23 +2,28 @@
 
 import { useEffect, useState, useMemo } from 'react'
 import type { Work } from '@/lib/supabase'
-import { getAllWorks } from '@/lib/works'
+import { getPublicWorksAPI, getAllWorksAPI } from '@/lib/api'
+import { useAuth } from '@/contexts/AuthContext'
 import WorkItem from '@/app/components/WorkItem'
+import PasswordModal from '@/app/components/PasswordModal'
 
 export default function WorkPage() {
   const [works, setWorks] = useState<Work[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [selectedSkill, setSelectedSkill] = useState<string>('all')
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [selectedWorkId, setSelectedWorkId] = useState<string | null>(null)
+  const { isAuthenticated } = useAuth()
 
   useEffect(() => {
     async function fetchWorks() {
       try {
         setLoading(true)
-        const data = await getAllWorks()
+        const data = isAuthenticated ? await getAllWorksAPI() : await getPublicWorksAPI()
         setWorks(data)
       } catch (err) {
-        setError('作品データの取得に失敗しました')
+        setError('データの取得に失敗しました')
         console.error(err)
       } finally {
         setLoading(false)
@@ -26,7 +31,7 @@ export default function WorkPage() {
     }
 
     fetchWorks()
-  }, [])
+  }, [isAuthenticated])
 
   // 全スキルの一覧を生成
   const allSkills = useMemo(() => {
@@ -44,6 +49,26 @@ export default function WorkPage() {
     }
     return works.filter(work => work.skills.includes(selectedSkill))
   }, [works, selectedSkill])
+
+  // マスクされたプロジェクトのクリック処理
+  const handleMaskedClick = (workId: string) => {
+    setSelectedWorkId(workId)
+    setIsModalOpen(true)
+  }
+
+  // パスワード認証成功時の処理
+  const handleAuthSuccess = async () => {
+    try {
+      setLoading(true)
+      const data = await getAllWorksAPI()
+      setWorks(data)
+    } catch (err) {
+      setError('データの取得に失敗しました')
+      console.error(err)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   if (loading) {
     return (
@@ -88,7 +113,7 @@ export default function WorkPage() {
         {/* スキルフィルター */}
         {allSkills.length > 0 && (
           <div className="mb-8">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">スキルで絞り込み</h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">FILTER</h2>
             <div className="flex flex-wrap gap-2">
               <button
                 onClick={() => setSelectedSkill('all')}
@@ -98,7 +123,7 @@ export default function WorkPage() {
                     : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                 }`}
               >
-                すべて ({works.length})
+                ALL ({works.length})
               </button>
               {allSkills.map((skill) => {
                 const count = works.filter(work => work.skills.includes(skill)).length
@@ -123,13 +148,13 @@ export default function WorkPage() {
         {filteredWorks.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-gray-500">
-              {selectedSkill === 'all' ? '作品がありません' : `${selectedSkill}の作品がありません`}
+              {selectedSkill === 'all' ? 'データがありません' : `${selectedSkill}のプロジェクトがありません`}
             </p>
           </div>
         ) : (
           <div className="grid gap-6">
             {filteredWorks.map((work) => (
-              <WorkItem key={work.id} work={work} />
+              <WorkItem key={work.id} work={work} onMaskedClick={handleMaskedClick} />
             ))}
           </div>
         )}
@@ -138,12 +163,19 @@ export default function WorkPage() {
           {filteredWorks.length > 0 && (
             <p>
               {selectedSkill === 'all' 
-                ? `${filteredWorks.length}件の作品を表示しています`
-                : `${selectedSkill}: ${filteredWorks.length}件の作品を表示しています`
+                ? `${filteredWorks.length}件のプロジェクトを表示しています`
+                : `${selectedSkill}: ${filteredWorks.length}件のプロジェクトを表示しています`
               }
             </p>
           )}
         </footer>
+
+        {/* パスワードモーダル */}
+        <PasswordModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onSuccess={handleAuthSuccess}
+        />
       </div>
     </div>
   )
