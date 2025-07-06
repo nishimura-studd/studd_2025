@@ -120,7 +120,18 @@ export default function WorkDetail({ params }: WorkDetailProps) {
         </header>
 
         {/* 画像エリア */}
-        {work.image_url && (
+        {work.images && work.images.length > 0 ? (
+          <div className="mb-8 space-y-4">
+            {work.images.map((imageUrl, index) => (
+              <img
+                key={index}
+                src={imageUrl}
+                alt={`${work.title} - ${index + 1}`}
+                className="w-full aspect-video object-cover rounded-lg border border-gray-200"
+              />
+            ))}
+          </div>
+        ) : work.image_url && (
           <div className="mb-8">
             <img
               src={work.image_url}

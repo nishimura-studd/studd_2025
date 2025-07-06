@@ -13,6 +13,7 @@ export type Work = {
   description: string | null
   is_public: boolean
   image_url: string | null
+  images: string[]
   project_url: string | null
   created_at: string
   updated_at: string
