@@ -25,13 +25,14 @@ export class SceneManager {
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap; // Use soft shadows for better quality
     this.container.appendChild(this.renderer.domElement);
 
-    // Initialize Stats.js for FPS display
-    this.stats = new Stats();
-    this.stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
-    this.stats.dom.style.position = 'absolute';
-    this.stats.dom.style.top = '0px';
-    this.stats.dom.style.left = '0px';
-    this.container.appendChild(this.stats.dom);
+    // Initialize Stats.js for FPS display (commented out for now)
+    // this.stats = new Stats();
+    // this.stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
+    // this.stats.dom.style.position = 'absolute';
+    // this.stats.dom.style.top = '0px';
+    // this.stats.dom.style.left = '0px';
+    // this.container.appendChild(this.stats.dom);
+    this.stats = null;
 
     // Create components
     this.createGround();
