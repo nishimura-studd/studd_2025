@@ -53,9 +53,9 @@ const DrumSync3D: React.FC<DrumSync3DProps> = ({
         appRef.current = app;
         setIsInitialized(true);
 
-        // 自動開始が有効な場合、ユーザーインタラクション後に自動初期化
-        if (autoStart && !audioInitialized) {
-          document.addEventListener('click', handleAutoInit, { once: true });
+        // 自動開始が有効な場合、コンテナクリック後に自動初期化
+        if (autoStart && !audioInitialized && containerRef.current) {
+          containerRef.current.addEventListener('click', handleAutoInit, { once: true });
         }
 
       } catch (error) {
@@ -82,6 +82,10 @@ const DrumSync3D: React.FC<DrumSync3DProps> = ({
       mounted = false;
       if (appRef.current) {
         appRef.current.dispose();
+      }
+      // イベントリスナーのクリーンアップ
+      if (containerRef.current) {
+        containerRef.current.removeEventListener('click', handleAutoInit);
       }
       document.removeEventListener('click', handleAutoInit);
     };
