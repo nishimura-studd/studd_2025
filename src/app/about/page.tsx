@@ -1,8 +1,20 @@
+import Link from 'next/link';
+
 export default function About() {
   return (
     <div className="min-h-screen">
       <section className="swiss-section" style={{paddingLeft: '200px'}}>
         <div className="max-w-4xl px-8">
+          <div className="mb-8">
+            <nav className="flex gap-6">
+              <Link href="/" className="text-sm font-mono uppercase tracking-wider text-gray-600 hover:text-black transition-colors">
+                ← Home
+              </Link>
+              <Link href="/work" className="text-sm font-mono uppercase tracking-wider text-gray-600 hover:text-black transition-colors">
+                Work
+              </Link>
+            </nav>
+          </div>
           <h1 className="mb-16">About</h1>
           
           <div className="space-y-16">
