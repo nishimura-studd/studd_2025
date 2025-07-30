@@ -1,16 +1,17 @@
 # CLAUDE.md
 
-このファイルは、Claude Code (claude.ai/code) がこのリポジトリでコードを操作する際のガイダンスを提供します。
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## プロジェクト概要
 
-Next.js 15とSupabaseを使用して構築されたポートフォリオサイト。プライベートプロジェクト用のパスワード保護されたコンテンツ管理と高度な認証システムが特徴です。
+Next.js 15とSupabaseを使用して構築されたポートフォリオサイト。プライベートプロジェクト用のパスワード保護されたコンテンツ管理と3D音響ビジュアライゼーションを統合した先進的なアーキテクチャが特徴です。
 
 **技術スタック:**
 - Next.js 15 (App Router) + React 19 + TypeScript
 - Tailwind CSS（スタイリング）
 - Supabase（バックエンド：PostgreSQL + 認証）
-- Three.js + React Three Fiber（3Dビジュアル、計画中）
+- Three.js + Web Audio API（3D音響ビジュアライゼーション）
+- stats.js（パフォーマンス監視）
 
 ## 開発コマンド
 
@@ -67,13 +68,40 @@ type Work = {
 }
 ```
 
+### DrumSync3Dシステム（メインページ）
+
+**音響ビジュアライゼーションアーキテクチャ:**
+- `DrumSync3D.tsx` - React統合レイヤー（クライアントサイド）
+- `DrumSync3DApp.js` - アプリケーションコーディネーター
+- `three-renderer.js` - 3Dレンダリングシステムの統合ポイント
+- `drum-system.js` - Web Audio APIベースの音響システム
+
+**3Dレンダリングモジュール（`lib/three/`）:**
+- `scene-manager.js` - シーン、ライティング、地面、Stats.js統合
+- `camera-system.js` - ガイドスフィア追従カメラ（軌道運動 + 動的高度変化）
+- `guide-sphere.js` - 前進移動するガイドスフィア（左右蛇行付き）
+- `object-spawner.js` - 音響同期3Dオブジェクト生成（16+ GLBモデル）
+
+**音響システム（`lib/sounds/`）:**
+- `sound-engine.js` - Web Audio合成エンジン（サンプル不使用）
+- `loop-patterns.js` - ドラムパターン定義（electronica、noisy、clickhouse、jersey club）
+- 自動パターン切替（2ループごと）+ 音響→3Dオブジェクト生成マッピング
+
+**データフロー:** LoopPattern → DrumSystem.triggerSound() → onSoundCallback → ThreeRenderer.triggerAnimation() → ObjectSpawner + GuideSphere
+
 ### UIコンポーネントアーキテクチャ
 
 **レイアウト構造:**
 - `app/layout.tsx` - AuthProviderラッパー付きルートレイアウト
-- `app/components/Navigation.tsx` - グローバルナビゲーション
+- `app/components/Navigation.tsx` - 条件付きナビゲーション（ホームページのみ表示）
+- `app/page.tsx` - DrumSync3Dフルスクリーン統合
+- `app/about/page.tsx` - Profile + Skills + Contact統合ページ
 - `app/work/page.tsx` - フィルタリング + 認証モーダル付きプロジェクトリスト
 - `app/work/[id]/page.tsx` - 複数画像サポート付きプロジェクト詳細ビュー
+
+**ナビゲーション設計:**
+- ホーム: 左上「studd. / スタッド.」ロゴ + 右上「about」リンク
+- 他ページ: ナビゲーション非表示、各ページ内で独自ナビゲーション
 
 **認証フロー:**
 1. ユーザーがマスクされたプロジェクトをクリック → `PasswordModal`が開く
@@ -87,17 +115,53 @@ type Work = {
 src/
 ├── app/                    # Next.js App Routerページ
 │   ├── components/        # 共有UIコンポーネント
+│   │   ├── DrumSync3D.tsx   # 3D音響ビジュアライゼーション
+│   │   ├── Navigation.tsx   # 条件付きナビゲーション
+│   │   ├── PasswordModal.tsx # 認証モーダル
+│   │   └── WorkItem.tsx     # プロジェクト表示
+│   ├── about/            # Profile + Skills + Contact統合
 │   └── work/             # Work関連ページ
 ├── contexts/             # React Contextプロバイダー
-├── lib/                  # コアユーティリティ
+├── lib/                  # コアユーティリティ + 3D/音響システム
 │   ├── api.ts           # Supabase APIラッパー
 │   ├── supabase.ts      # クライアント設定 + 型
-│   └── utils.ts         # ヘルパー関数
-└── data/                 # データベースセットアップ
-    └── supabase-auth-functions.sql
+│   ├── utils.ts         # ヘルパー関数
+│   ├── DrumSync3DApp.js  # 3D音響アプリケーションコーディネーター
+│   ├── three-renderer.js # 3Dレンダリング統合
+│   ├── three/           # モジュラー3Dシステム
+│   │   ├── scene-manager.js    # シーン + ライティング + Stats.js
+│   │   ├── camera-system.js    # 軌道カメラシステム
+│   │   ├── guide-sphere.js     # 前進ガイドスフィア
+│   │   └── object-spawner.js   # 音響同期オブジェクト生成
+│   └── sounds/          # Web Audio音響システム
+│       ├── drum-system.js      # 高レベル音響コーディネーター
+│       ├── sound-engine.js     # 低レベルWeb Audio合成
+│       └── loop-patterns.js    # ドラムパターン定義
+├── data/                 # データベースセットアップ
+│   └── supabase-auth-functions.sql
+└── public/
+    └── assets/
+        └── glb/          # 3Dモデルアセット（16+ GLBファイル）
 ```
 
 ## 重要な実装詳細
+
+### 3D音響システムの重要な考慮事項
+
+**Web Audio制約:**
+- ブラウザセキュリティによりユーザーインタラクション必須
+- DrumSync3Dは初回クリックで自動音声初期化（コンテナ内クリックのみ）
+- ナビゲーションリンククリックでは音声初期化されない設計
+
+**パフォーマンス設定:**
+- Stats.js統合（現在無効化、必要時に`scene-manager.js`で有効化可能）
+- オブジェクト数制限（100個）で自動クリーンアップ
+- フレームレート独立アニメーション（deltaTime使用）
+
+**3Dアセット管理:**
+- GLBファイル（16+モデル）は`public/assets/glb/`に配置
+- 音響-オブジェクトマッピング: kick→tree、snare→house等
+- セクターベース配置システム（8セクター、重複回避）
 
 ### 環境設定
 `.env.local`に以下が必要:
