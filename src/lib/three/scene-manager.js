@@ -1,6 +1,6 @@
 // シーン管理システム - 基本的なシーン、地面、ライティング
 import * as THREE from 'three';
-import Stats from 'stats.js';
+// import Stats from 'stats.js';
 
 export class SceneManager {
   constructor(container = document.body) {
@@ -15,7 +15,7 @@ export class SceneManager {
   init() {
     // Scene setup
     this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color(0xf5f5f5); // Very light gray, almost white background
+    this.scene.background = new THREE.Color(0xffffff); // Pure white background to match theme
 
     // Renderer setup
     this.renderer = new THREE.WebGLRenderer({ antialias: true });

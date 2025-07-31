@@ -41,13 +41,14 @@ export default function PasswordModal({ isOpen, onClose, onSuccess }: PasswordMo
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold text-gray-900">パスワード入力</h2>
+    <div className="fixed inset-0 flex items-center justify-center z-50" style={{background: 'rgba(0, 0, 0, 0.5)'}}>
+      <div className="card w-full max-w-md mx-4" style={{background: 'var(--background)', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'}}>
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-xl font-semibold" style={{color: 'var(--foreground)'}}>パスワード入力</h2>
           <button
             onClick={handleClose}
-            className="text-gray-400 hover:text-gray-600"
+            className="hover:opacity-70 transition-opacity"
+            style={{color: 'var(--foreground-muted)'}}
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -56,8 +57,8 @@ export default function PasswordModal({ isOpen, onClose, onSuccess }: PasswordMo
         </div>
 
         <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+          <div className="mb-6">
+            <label htmlFor="password" className="block text-sm font-medium mb-2" style={{color: 'var(--foreground)'}}>
               説明文
             </label>
             <input
@@ -65,13 +66,19 @@ export default function PasswordModal({ isOpen, onClose, onSuccess }: PasswordMo
               id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 rounded-md transition-colors focus:outline-none focus:ring-2"
+              style={{
+                background: 'var(--background)',
+                border: '1px solid var(--border)',
+                color: 'var(--foreground)',
+                '--tw-ring-color': 'var(--accent)'
+              }}
               placeholder="パスワードを入力してください"
               disabled={loading}
               autoFocus
             />
             {error && (
-              <p className="mt-2 text-sm text-red-600">{error}</p>
+              <p className="mt-2 text-sm" style={{color: 'var(--error)'}}>{error}</p>
             )}
           </div>
 
@@ -79,14 +86,24 @@ export default function PasswordModal({ isOpen, onClose, onSuccess }: PasswordMo
             <button
               type="button"
               onClick={handleClose}
-              className="flex-1 px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition-colors"
+              className="flex-1 swiss-button transition-colors"
+              style={{
+                background: 'var(--background-surface)',
+                border: '1px solid var(--border)',
+                color: 'var(--foreground-muted)'
+              }}
               disabled={loading}
             >
               キャンセル
             </button>
             <button
               type="submit"
-              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50"
+              className="flex-1 swiss-button transition-colors disabled:opacity-50"
+              style={{
+                background: 'var(--accent)',
+                border: '1px solid var(--accent)',
+                color: 'white'
+              }}
               disabled={loading || !password}
             >
               {loading ? '確認中...' : 'OK'}

@@ -19,10 +19,10 @@ const Navigation = () => {
           href="/"
           className="block hover:opacity-70 transition-opacity duration-200"
         >
-          <div className="font-mono text-2xl font-normal text-black">
+          <div className="font-mono text-2xl font-medium" style={{color: 'var(--foreground)'}}>
             studd.
           </div>
-          <div className="font-sans text-xs text-black mt-1">
+          <div className="font-sans text-xs mt-1" style={{color: 'var(--foreground-muted)'}}>
             スタッド.
           </div>
         </Link>
@@ -32,7 +32,12 @@ const Navigation = () => {
       <nav className="fixed top-6 right-6 z-50">
         <Link
           href="/about"
-          className="font-mono text-sm uppercase tracking-wider text-gray-600 hover:text-black transition-colors duration-200"
+          className="swiss-button px-4 py-2 text-sm font-medium rounded-lg"
+          style={{
+            background: 'var(--background-surface)',
+            border: '1px solid var(--border)',
+            color: 'var(--foreground)'
+          }}
         >
           about
         </Link>

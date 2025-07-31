@@ -20,24 +20,28 @@ export default function WorkItem({ work, onMaskedClick }: WorkItemProps) {
   return (
     <Link 
       href={`/work/${work.id}`}
-      className="block p-6 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+      className="card block hover:scale-[1.02] transition-all duration-200"
       onClick={handleClick}
+      style={{
+        background: 'var(--background-surface)',
+        border: '1px solid var(--border)'
+      }}
     >
-      <div className="space-y-3">
+      <div className="space-y-4">
         {/* タイトルと年 */}
         <div className="flex items-start justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <h3 className="text-lg font-semibold text-gray-900 line-clamp-2">
+          <div className="flex items-center gap-3">
+            <h3 className="text-lg font-semibold line-clamp-2" style={{color: 'var(--foreground)'}}>
               {work.title}
             </h3>
             {work.is_masked && (
-              <span className="px-2 py-1 text-xs font-medium bg-orange-100 text-orange-800 rounded-md">
+              <span className="badge badge-warning">
                 Limited
               </span>
             )}
           </div>
           {startYear && (
-            <span className="text-sm text-gray-500 font-medium shrink-0">
+            <span className="text-sm font-medium shrink-0" style={{color: 'var(--foreground-subtle)'}}>
               {startYear}
             </span>
           )}
@@ -49,7 +53,7 @@ export default function WorkItem({ work, onMaskedClick }: WorkItemProps) {
             {work.skills.map((skill, index) => (
               <span
                 key={index}
-                className="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-md"
+                className="badge"
               >
                 {skill}
               </span>

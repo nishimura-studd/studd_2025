@@ -14,7 +14,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [refreshTrigger, setRefreshTrigger] = useState(0)
+  const [, setRefreshTrigger] = useState(0)
 
   const checkAuth = () => {
     setIsAuthenticated(checkStoredAuth())
