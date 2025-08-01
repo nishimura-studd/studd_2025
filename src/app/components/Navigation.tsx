@@ -19,10 +19,26 @@ const Navigation = () => {
           href="/"
           className="block hover:opacity-70 transition-opacity duration-200"
         >
-          <div className="font-mono text-2xl font-medium" style={{color: 'var(--foreground)'}}>
+          <div 
+            className="text-3xl font-semibold" 
+            style={{
+              color: 'var(--foreground)',
+              lineHeight: '48px',
+              transform: 'translateY(-6px)',
+              letterSpacing: '-0.02em'
+            }}
+          >
             studd.
           </div>
-          <div className="font-sans text-xs mt-1" style={{color: 'var(--foreground-muted)'}}>
+          <div 
+            className="text-xs font-light" 
+            style={{
+              color: 'var(--foreground-muted)',
+              lineHeight: '16px',
+              letterSpacing: '0.01em',
+              transform: 'translateY(-12px)'
+            }}
+          >
             スタッド.
           </div>
         </Link>
@@ -32,11 +48,13 @@ const Navigation = () => {
       <nav className="fixed top-6 right-6 z-50">
         <Link
           href="/about"
-          className="swiss-button px-4 py-2 text-sm font-medium rounded-lg"
+          className="text-sm font-light hover:opacity-70 transition-opacity duration-200"
           style={{
-            background: 'var(--background-surface)',
-            border: '1px solid var(--border)',
-            color: 'var(--foreground)'
+            background: 'transparent',
+            border: 'none',
+            color: 'var(--foreground)',
+            lineHeight: '20px',
+            padding: 0
           }}
         >
           about

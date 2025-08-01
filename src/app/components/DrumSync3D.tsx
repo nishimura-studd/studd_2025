@@ -126,7 +126,10 @@ const DrumSync3D: React.FC<DrumSync3DProps> = ({
       {isInitialized && !audioInitialized && (
         <div className="play-button-container">
           <button className="play-button" onClick={handleInitAudio}>
-            CLICK TO PLAY
+            Play with sound
+            <div className="play-sound-icon">
+              <VolumeOnIcon />
+            </div>
           </button>
         </div>
       )}
@@ -161,28 +164,44 @@ const DrumSync3D: React.FC<DrumSync3DProps> = ({
         
         .play-button {
           padding: 15px 30px;
-          background-color: #333;
-          color: white;
-          border: none;
+          background-color: transparent;
+          color: #333;
+          border: 2px solid #333;
           border-radius: 8px;
           cursor: pointer;
-          font-family: monospace;
-          font-size: 16px;
-          font-weight: bold;
-          letter-spacing: 1px;
+          font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+          font-size: 14px;
+          font-weight: 400;
+          letter-spacing: 0.5px;
           transition: all 0.2s ease;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
         
         .play-button:hover {
-          background-color: #555;
-          transform: translateY(-2px);
-          box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+          background-color: #333;
+          color: white;
         }
         
         .play-button:active {
-          background-color: #777;
-          transform: translateY(0);
-          box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+          background-color: #555;
+          color: white;
+        }
+        
+        .play-sound-icon {
+          width: 24px;
+          height: 24px;
+          color: #333;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-left: 12px;
+          transition: all 0.2s ease;
+        }
+        
+        .play-button:hover .play-sound-icon {
+          color: white;
         }
         
         .volume-button {
