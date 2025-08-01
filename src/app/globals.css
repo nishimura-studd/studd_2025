@@ -13,12 +13,13 @@
   --accent-subtle: #22c55e;
   --warning: #f59e0b;
   --error: #ef4444;
+  --grid-guide: rgba(0, 0, 0, 0.08);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-inter);
   --font-mono: var(--font-geist-mono);
 }
 
@@ -31,49 +32,57 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-weight: 400;
-  line-height: 1.6;
-  letter-spacing: -0.01em;
+  font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-weight: 300;
+  line-height: 20px;
+  letter-spacing: -0.005em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-weight: 600;
-  line-height: 1.2;
-  letter-spacing: -0.02em;
+  font-weight: 500;
+  line-height: 40px;
+  letter-spacing: -0.015em;
   color: var(--foreground);
+  margin-bottom: 20px;
 }
 
 h1 {
   font-size: clamp(2rem, 5vw, 3.5rem);
-  font-weight: 700;
-  line-height: 1.1;
+  font-weight: 600;
+  line-height: 60px;
+  margin-bottom: 40px;
 }
 
 h2 {
   font-size: clamp(1.5rem, 4vw, 2.5rem);
-  font-weight: 600;
-  line-height: 1.2;
+  font-weight: 500;
+  line-height: 40px;
+  margin-bottom: 20px;
 }
 
 h3 {
   font-size: 1.5rem;
-  font-weight: 600;
-  line-height: 1.3;
+  font-weight: 400;
+  line-height: 40px;
+  margin-bottom: 20px;
 }
 
 h4 {
   font-size: 1.25rem;
-  font-weight: 600;
-  line-height: 1.4;
+  font-weight: 400;
+  line-height: 20px;
+  margin-bottom: 20px;
 }
 
 p {
   font-size: 1rem;
-  line-height: 1.7;
+  font-weight: 300;
+  line-height: 20px;
   color: var(--foreground-muted);
+  letter-spacing: 0.01em;
+  margin-bottom: 20px;
 }
 
 .swiss-grid {
@@ -86,7 +95,7 @@ p {
 }
 
 .swiss-section {
-  padding: 6rem 0;
+  padding: 120px 0;
 }
 
 .swiss-line {
@@ -119,7 +128,7 @@ p {
   background: var(--background-surface);
   border: 1px solid var(--border);
   border-radius: 0.75rem;
-  padding: 1.5rem;
+  padding: 20px;
   transition: all 0.2s ease;
 }
 
@@ -132,13 +141,14 @@ p {
 .badge {
   display: inline-flex;
   align-items: center;
-  padding: 0.25rem 0.75rem;
+  padding: 4px 12px;
   background: var(--background-subtle);
   border: 1px solid var(--border);
   border-radius: 9999px;
   font-size: 0.75rem;
   font-weight: 500;
   color: var(--foreground-muted);
+  line-height: 12px;
 }
 
 .badge-accent {
@@ -176,6 +186,36 @@ p {
 }
 
 
+/* Simple Design Grid */
+.design-grid {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.design-grid.visible {
+  opacity: 1;
+}
+
+.design-grid::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    linear-gradient(to right, var(--grid-guide) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-guide) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
 @media (max-width: 768px) {
   .swiss-grid {
     grid-template-columns: repeat(6, 1fr);
@@ -185,5 +225,27 @@ p {
   
   .swiss-section {
     padding: 3rem 0;
+  }
+  
+  .design-grid::before {
+    background-size: 10px 10px;
+  }
+  
+  h1 {
+    line-height: 48px !important;
+    transform: translateY(-6px) !important;
+  }
+  
+  h2 {
+    line-height: 32px !important;
+    transform: translateY(-3px) !important;
+  }
+  
+  p {
+    line-height: 28px !important;
+  }
+  
+  .social-icons {
+    transform: translateY(-12px) !important;
   }
 }
