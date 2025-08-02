@@ -66,8 +66,8 @@ export default function PasswordModal({ isOpen, onClose, onSuccess }: PasswordMo
       onClick={handleClose}
     >
       <div 
-        className="w-full max-w-md mx-4" 
-        style={{background: '#000000', padding: '20px', minHeight: '300px', position: 'relative', borderRadius: '12px'}}
+        className="password-modal-content" 
+        style={{background: '#000000', padding: '20px', minHeight: '300px', position: 'relative'}}
         onClick={(e) => e.stopPropagation()}
       >
         <button
@@ -170,6 +170,25 @@ export default function PasswordModal({ isOpen, onClose, onSuccess }: PasswordMo
           </form>
         </div>
       </div>
+      
+      <style jsx>{`
+        .password-modal-content {
+          width: 100%;
+          max-width: 28rem;
+          margin: 0 1rem;
+          border-radius: 12px;
+        }
+        
+        @media (max-width: 767px) {
+          .password-modal-content {
+            width: 100vw;
+            height: 100vh;
+            max-width: none;
+            margin: 0;
+            border-radius: 0;
+          }
+        }
+      `}</style>
     </div>
   )
 }
