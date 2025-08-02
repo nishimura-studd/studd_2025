@@ -20,28 +20,29 @@ export default function WorkItem({ work, onMaskedClick }: WorkItemProps) {
   return (
     <Link 
       href={`/work/${work.id}`}
-      className="card block hover:scale-[1.02] transition-all duration-200"
+      className="block transition-colors duration-200"
       onClick={handleClick}
       style={{
-        background: 'var(--background-surface)',
-        border: '1px solid var(--border)'
+        background: 'var(--background)',
+        border: 'none'
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.backgroundColor = '#f3f4f6'
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.backgroundColor = 'var(--background)'
       }}
     >
-      <div className="space-y-4">
+      <div className="space-y-6" style={{padding: '20px'}}>
         {/* タイトルと年 */}
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <h3 className="text-lg font-semibold line-clamp-2" style={{color: 'var(--foreground)'}}>
+        <div className="flex items-start justify-between gap-6">
+          <div className="flex items-center gap-4">
+            <h3 className="text-xl font-light line-clamp-2 tracking-tight" style={{color: 'var(--foreground)'}}>
               {work.title}
             </h3>
-            {work.is_masked && (
-              <span className="badge badge-warning">
-                Limited
-              </span>
-            )}
           </div>
           {startYear && (
-            <span className="text-sm font-medium shrink-0" style={{color: 'var(--foreground-subtle)'}}>
+            <span className="text-sm font-light shrink-0 tracking-widest" style={{color: 'var(--foreground-subtle)'}}>
               {startYear}
             </span>
           )}
@@ -53,9 +54,17 @@ export default function WorkItem({ work, onMaskedClick }: WorkItemProps) {
             {work.skills.map((skill, index) => (
               <span
                 key={index}
-                className="badge"
+                className="text-xs font-light"
+                style={{
+                  background: 'transparent',
+                  color: 'var(--foreground-muted)',
+                  border: 'none',
+                  padding: '6px 12px',
+                  borderRadius: '4px',
+                  lineHeight: '16px'
+                }}
               >
-                {skill}
+                #{skill}
               </span>
             ))}
           </div>

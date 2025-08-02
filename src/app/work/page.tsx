@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState, useMemo } from 'react'
+import Link from 'next/link'
 import type { Work } from '@/lib/supabase'
 import { getPublicWorksAPI, getAllWorksAPI } from '@/lib/api'
 import { useAuth } from '@/contexts/AuthContext'
@@ -72,15 +73,63 @@ export default function WorkPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex justify-center py-8" style={{background: 'var(--background)'}}>
-        <div className="max-w-4xl w-full px-4">
-          <div className="animate-pulse space-y-6">
-            <div className="h-8 rounded w-48" style={{background: 'var(--background-surface)'}}></div>
-            <div className="grid gap-6">
-              {[...Array(6)].map((_, i) => (
-                <div key={i} className="h-32 rounded-lg" style={{background: 'var(--background-surface)'}}></div>
-              ))}
+      <div className="min-h-screen flex justify-center pt-8 md:pt-10" style={{background: 'var(--background)'}}>
+        <div className="max-w-4xl w-full" style={{paddingLeft: '24px', paddingRight: '24px'}}>
+          <div style={{marginBottom: '100px'}}>
+            <nav style={{height: '20px', alignItems: 'baseline'}}>
+              <Link 
+                href="/" 
+                className="text-sm font-light hover:opacity-70 transition-opacity duration-200 flex items-center"
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  color: 'var(--foreground)',
+                  lineHeight: '20px',
+                  padding: 0,
+                  transform: 'translateX(-2px)'
+                }}
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{marginRight: '8px'}}>
+                  <path d="M15 18l-6-6 6-6"/>
+                </svg>
+                Home
+              </Link>
+            </nav>
+          </div>
+          
+          <header style={{marginBottom: '80px'}}>
+            <h1 className="text-3xl md:text-5xl" style={{color: 'var(--foreground)', lineHeight: '48px', transform: 'translateY(-6px)', marginBottom: '40px'}}>Work</h1>
+          </header>
+
+          {/* FILTER プレイスホルダー */}
+          <div style={{marginBottom: '60px'}}>
+            <h2 className="text-sm font-light" style={{color: 'var(--foreground)', lineHeight: '20px', marginBottom: '20px', fontSize: '14px'}}>FILTER</h2>
+            <div className="flex flex-wrap gap-2 ml-3 md:ml-5 animate-pulse">
+              <div className="h-4 w-16 my-1" style={{background: 'var(--background-surface)'}}></div>
+              <div className="h-4 w-20 my-1" style={{background: 'var(--background-surface)'}}></div>
+              <div className="h-4 w-24 my-1" style={{background: 'var(--background-surface)'}}></div>
             </div>
+          </div>
+
+          {/* WorkItem プレイスホルダー */}
+          <div className="animate-pulse space-y-8" style={{marginBottom: '60px'}}>
+            <div className="swiss-line"></div>
+            {[...Array(3)].map((_, i) => (
+              <div key={i}>
+                <div className="space-y-6" style={{padding: '20px', height: '128px'}}>
+                  <div className="flex items-start justify-between gap-6" style={{height: '60px'}}>
+                    <div className="h-3 w-64 my-1" style={{background: 'var(--background-surface)'}}></div>
+                    <div className="h-2 w-12 my-1" style={{background: 'var(--background-surface)'}}></div>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    <div className="h-3 w-16 my-1" style={{background: 'var(--background-surface)'}}></div>
+                    <div className="h-3 w-20 my-1" style={{background: 'var(--background-surface)'}}></div>
+                  </div>
+                </div>
+                {i < 2 && <div className="swiss-line"></div>}
+              </div>
+            ))}
+            <div className="swiss-line"></div>
           </div>
         </div>
       </div>
@@ -89,11 +138,11 @@ export default function WorkPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen flex justify-center py-8" style={{background: 'var(--background)'}}>
-        <div className="max-w-4xl w-full px-4">
+      <div className="min-h-screen flex justify-center pt-8 md:pt-10" style={{background: 'var(--background)'}}>
+        <div className="max-w-4xl w-full" style={{paddingLeft: '24px', paddingRight: '24px'}}>
           <div className="text-center">
-            <h1 className="text-2xl font-bold mb-4" style={{color: 'var(--foreground)'}}>エラー</h1>
-            <p style={{color: 'var(--foreground-muted)'}}>{error}</p>
+            <h1 className="text-3xl md:text-5xl" style={{color: 'var(--foreground)', lineHeight: '48px', transform: 'translateY(-6px)', marginBottom: '40px'}}>エラー</h1>
+            <p className="text-sm md:text-base" style={{color: 'var(--foreground-muted)', lineHeight: '28px'}}>{error}</p>
           </div>
         </div>
       </div>
@@ -101,27 +150,50 @@ export default function WorkPage() {
   }
 
   return (
-    <div className="min-h-screen flex justify-center py-8" style={{background: 'var(--background)'}}>
-      <div className="max-w-4xl w-full px-4">
-        <header className="mb-12">
-          <h1 className="text-3xl font-bold mb-4" style={{color: 'var(--foreground)'}}>Works</h1>
-          <p style={{color: 'var(--foreground-muted)'}}>
-            これまでに携わったプロジェクトの一覧です
-          </p>
+    <div className="min-h-screen flex justify-center pt-8 md:pt-10" style={{background: 'var(--background)'}}>
+      <div className="max-w-4xl w-full" style={{paddingLeft: '24px', paddingRight: '24px'}}>
+        <div style={{marginBottom: '100px'}}>
+          <nav style={{height: '20px', alignItems: 'baseline'}}>
+            <Link 
+              href="/" 
+              className="text-sm font-light hover:opacity-70 transition-opacity duration-200 flex items-center"
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: 'var(--foreground)',
+                lineHeight: '20px',
+                padding: 0,
+                transform: 'translateX(-2px)'
+              }}
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{marginRight: '8px'}}>
+                <path d="M15 18l-6-6 6-6"/>
+              </svg>
+              Home
+            </Link>
+          </nav>
+        </div>
+        
+        <header style={{marginBottom: '80px'}}>
+          <h1 className="text-3xl md:text-5xl" style={{color: 'var(--foreground)', lineHeight: '48px', transform: 'translateY(-6px)', marginBottom: '40px'}}>Work</h1>
         </header>
 
         {/* スキルフィルター */}
         {allSkills.length > 0 && (
-          <div className="mb-8">
-            <h2 className="text-lg font-semibold mb-6" style={{color: 'var(--foreground)'}}>Filter</h2>
-            <div className="flex flex-wrap gap-3">
+          <div style={{marginBottom: '60px'}}>
+            <h2 className="text-sm font-light" style={{color: 'var(--foreground)', lineHeight: '20px', marginBottom: '20px', fontSize: '14px'}}>FILTER</h2>
+            <div className="flex flex-wrap gap-2 ml-3 md:ml-5">
               <button
                 onClick={() => setSelectedSkill('all')}
-                className={`swiss-button ${selectedSkill === 'all' ? 'badge-accent' : ''}`}
+                className={`text-xs font-light ${selectedSkill === 'all' ? '' : 'hover:opacity-70'} transition-opacity duration-200`}
                 style={{
-                  background: selectedSkill === 'all' ? 'var(--accent)' : 'var(--background-surface)',
-                  color: selectedSkill === 'all' ? 'var(--background)' : 'var(--foreground)',
-                  border: `1px solid ${selectedSkill === 'all' ? 'var(--accent)' : 'var(--border)'}`
+                  background: selectedSkill === 'all' ? 'var(--foreground)' : 'transparent',
+                  color: selectedSkill === 'all' ? 'var(--background)' : 'var(--foreground-muted)',
+                  border: 'none',
+                  padding: '6px 12px',
+                  borderRadius: '4px',
+                  lineHeight: '16px',
+                  cursor: selectedSkill === 'all' ? 'default' : 'pointer'
                 }}
               >
                 All ({works.length})
@@ -133,11 +205,15 @@ export default function WorkPage() {
                   <button
                     key={skill}
                     onClick={() => setSelectedSkill(skill)}
-                    className="swiss-button"
+                    className={`text-xs font-light ${isSelected ? '' : 'hover:opacity-70'} transition-opacity duration-200`}
                     style={{
-                      background: isSelected ? 'var(--accent)' : 'var(--background-surface)',
-                      color: isSelected ? 'var(--background)' : 'var(--foreground)',
-                      border: `1px solid ${isSelected ? 'var(--accent)' : 'var(--border)'}`
+                      background: isSelected ? 'var(--foreground)' : 'transparent',
+                      color: isSelected ? 'var(--background)' : 'var(--foreground-muted)',
+                      border: 'none',
+                      padding: '6px 12px',
+                      borderRadius: '4px',
+                      lineHeight: '16px',
+                      cursor: isSelected ? 'default' : 'pointer'
                     }}
                   >
                     {skill} ({count})
@@ -155,23 +231,24 @@ export default function WorkPage() {
             </p>
           </div>
         ) : (
-          <div className="grid gap-6">
-            {filteredWorks.map((work) => (
-              <WorkItem key={work.id} work={work} onMaskedClick={handleMaskedClick} />
+          <div className="space-y-8" style={{marginBottom: '60px'}}>
+            {/* 上部の罫線 */}
+            <div className="swiss-line"></div>
+            
+            {filteredWorks.map((work, index) => (
+              <div key={work.id} className="space-y-8">
+                <WorkItem work={work} onMaskedClick={handleMaskedClick} />
+                {/* 各アイテム間の罫線 */}
+                {index < filteredWorks.length - 1 && (
+                  <div className="swiss-line"></div>
+                )}
+              </div>
             ))}
+            
+            {/* 下部の罫線 */}
+            <div className="swiss-line"></div>
           </div>
         )}
-
-        <footer className="mt-12 text-center text-sm">
-          {filteredWorks.length > 0 && (
-            <p style={{color: 'var(--foreground-subtle)'}}>
-              {selectedSkill === 'all' 
-                ? `${filteredWorks.length}件のプロジェクトを表示しています`
-                : `${selectedSkill}: ${filteredWorks.length}件のプロジェクトを表示しています`
-              }
-            </p>
-          )}
-        </footer>
 
         {/* パスワードモーダル */}
         <PasswordModal
