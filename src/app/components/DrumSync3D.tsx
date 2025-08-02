@@ -177,6 +177,7 @@ const DrumSync3D: React.FC<DrumSync3DProps> = ({
           display: flex;
           align-items: center;
           justify-content: center;
+          white-space: nowrap;
         }
         
         .play-button:hover {
