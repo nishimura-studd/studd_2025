@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 
 interface PasswordModalProps {
@@ -14,6 +14,24 @@ export default function PasswordModal({ isOpen, onClose, onSuccess }: PasswordMo
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const { login } = useAuth()
+  const buttonRef = useRef<HTMLButtonElement>(null)
+
+  // パスワード状態変化時にボタンスタイルを更新
+  useEffect(() => {
+    if (buttonRef.current) {
+      if (!password || loading) {
+        // Disabled状態
+        buttonRef.current.style.backgroundColor = '#ffffff'
+        buttonRef.current.style.color = '#666666'
+        buttonRef.current.style.borderColor = '#ffffff'
+      } else {
+        // Active状態
+        buttonRef.current.style.backgroundColor = '#ffffff'
+        buttonRef.current.style.color = '#000000'
+        buttonRef.current.style.borderColor = 'hsl(153.1deg 60.2% 52.7% / 1)'
+      }
+    }
+  }, [password, loading])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -28,6 +46,7 @@ export default function PasswordModal({ isOpen, onClose, onSuccess }: PasswordMo
       onClose()
     } else {
       setError('パスワードが間違っています')
+      setPassword('')
     }
     setLoading(false)
   }
@@ -41,75 +60,115 @@ export default function PasswordModal({ isOpen, onClose, onSuccess }: PasswordMo
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50" style={{background: 'rgba(0, 0, 0, 0.5)'}}>
-      <div className="card w-full max-w-md mx-4" style={{background: 'var(--background)', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'}}>
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-semibold" style={{color: 'var(--foreground)'}}>パスワード入力</h2>
-          <button
-            onClick={handleClose}
-            className="hover:opacity-70 transition-opacity"
-            style={{color: 'var(--foreground-muted)'}}
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
+    <div 
+      className="fixed inset-0 flex items-center justify-center z-50" 
+      style={{background: 'rgba(0, 0, 0, 0.5)'}}
+      onClick={handleClose}
+    >
+      <div 
+        className="w-full max-w-md mx-4" 
+        style={{background: '#000000', padding: '20px', minHeight: '300px', position: 'relative', borderRadius: '12px'}}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          onClick={handleClose}
+          className="hover:opacity-70 transition-opacity"
+          style={{
+            position: 'absolute',
+            top: '20px',
+            right: '20px',
+            color: '#ffffff',
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer'
+          }}
+          type="button"
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
 
-        <form onSubmit={handleSubmit}>
-          <div className="mb-6">
-            <label htmlFor="password" className="block text-sm font-medium mb-2" style={{color: 'var(--foreground)'}}>
-              説明文
-            </label>
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-3 py-2 rounded-md transition-colors focus:outline-none focus:ring-2"
-              style={{
-                background: 'var(--background)',
-                border: '1px solid var(--border)',
-                color: 'var(--foreground)',
-                '--tw-ring-color': 'var(--accent)'
-              }}
-              placeholder="パスワードを入力してください"
-              disabled={loading}
-              autoFocus
-            />
-            {error && (
-              <p className="mt-2 text-sm" style={{color: 'var(--error)'}}>{error}</p>
-            )}
-          </div>
+        <div className="flex flex-col justify-center" style={{height: 'calc(100% - 40px)', paddingTop: '40px'}}>
+          <form onSubmit={handleSubmit} className="flex flex-col items-center">
+            <div style={{width: '100%', marginBottom: '30px', marginTop: '40px'}}>
+              <label htmlFor="password" className="block text-sm font-light" style={{color: '#ffffff', lineHeight: '20px', marginBottom: '16px'}}>
+                PASSWORD :
+              </label>
+              <input
+                type="password"
+                id="password"
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value)
+                  if (error) setError('')
+                }}
+                className="w-full text-xs font-light transition-colors focus:outline-none"
+                style={{
+                  background: '#000000',
+                  border: '1px solid #333333',
+                  color: '#ffffff',
+                  lineHeight: '16px',
+                  height: '52px',
+                  borderRadius: '4px',
+                  padding: '12px 16px'
+                } as React.CSSProperties}
+                onFocus={(e) => {
+                  e.target.style.borderColor = '#888888'
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = '#333333'
+                }}
+                placeholder="パスワードを入力してください"
+                disabled={loading}
+                autoFocus
+              />
+              <div style={{height: '40px', display: 'flex', alignItems: 'center', marginTop: '4px'}}>
+                {error && (
+                  <p className="text-xs font-light" style={{color: '#ff6b6b', lineHeight: '16px', fontSize: '12px'}}>{error}</p>
+                )}
+              </div>
+            </div>
 
-          <div className="flex gap-3">
             <button
-              type="button"
-              onClick={handleClose}
-              className="flex-1 swiss-button transition-colors"
-              style={{
-                background: 'var(--background-surface)',
-                border: '1px solid var(--border)',
-                color: 'var(--foreground-muted)'
-              }}
-              disabled={loading}
-            >
-              キャンセル
-            </button>
-            <button
+              ref={buttonRef}
               type="submit"
-              className="flex-1 swiss-button transition-colors disabled:opacity-50"
+              className="w-full transition-all duration-200 disabled:opacity-50"
               style={{
-                background: 'var(--accent)',
-                border: '1px solid var(--accent)',
-                color: 'white'
+                padding: '15px 30px',
+                backgroundColor: (!loading && password) ? '#ffffff' : '#ffffff',
+                color: (!loading && password) ? '#000000' : '#666666',
+                border: `1px solid ${(!loading && password) ? 'hsl(153.1deg 60.2% 52.7% / 1)' : '#ffffff'}`,
+                borderRadius: '8px',
+                cursor: (!loading && password) ? 'pointer' : 'default',
+                fontFamily: 'var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+                fontSize: '14px',
+                fontWeight: '400',
+                letterSpacing: '0.5px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+              onMouseEnter={(e) => {
+                if (!loading && password) {
+                  e.currentTarget.style.backgroundColor = 'hsl(153.1deg 60.2% 52.7% / 1)'
+                  e.currentTarget.style.color = '#000000'
+                  e.currentTarget.style.borderColor = 'hsl(153.1deg 60.2% 52.7% / 1)'
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!loading && password) {
+                  e.currentTarget.style.backgroundColor = '#ffffff'
+                  e.currentTarget.style.color = '#000000'
+                  e.currentTarget.style.borderColor = 'hsl(153.1deg 60.2% 52.7% / 1)'
+                }
               }}
               disabled={loading || !password}
             >
               {loading ? '確認中...' : 'OK'}
             </button>
-          </div>
-        </form>
+          </form>
+        </div>
       </div>
     </div>
   )
