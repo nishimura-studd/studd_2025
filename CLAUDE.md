@@ -96,8 +96,8 @@ type Work = {
 - `app/components/Navigation.tsx` - 条件付きナビゲーション（ホームページのみ表示）
 - `app/page.tsx` - DrumSync3Dフルスクリーン統合
 - `app/about/page.tsx` - Profile + Skills + Contact統合ページ
-- `app/work/page.tsx` - フィルタリング + 認証モーダル付きプロジェクトリスト
-- `app/work/[id]/page.tsx` - 複数画像サポート付きプロジェクト詳細ビュー
+- `app/works/page.tsx` - フィルタリング + 認証モーダル付きプロジェクトリスト
+- `app/works/[id]/page.tsx` - 複数画像サポート付きプロジェクト詳細ビュー
 
 **ナビゲーション設計:**
 - ホーム: 左上「studd. / スタッド.」ロゴ + 右上「about」リンク
@@ -120,7 +120,7 @@ src/
 │   │   ├── PasswordModal.tsx # 認証モーダル
 │   │   └── WorkItem.tsx     # プロジェクト表示
 │   ├── about/            # Profile + Skills + Contact統合
-│   └── work/             # Work関連ページ
+│   └── works/            # Works関連ページ
 ├── contexts/             # React Contextプロバイダー
 ├── lib/                  # コアユーティリティ + 3D/音響システム
 │   ├── api.ts           # Supabase APIラッパー

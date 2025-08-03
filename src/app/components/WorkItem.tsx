@@ -19,7 +19,7 @@ export default function WorkItem({ work, onMaskedClick }: WorkItemProps) {
 
   return (
     <Link 
-      href={`/work/${work.id}`}
+      href={`/works/${work.id}`}
       className="block transition-colors duration-200"
       onClick={handleClick}
       style={{

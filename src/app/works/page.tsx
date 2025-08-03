@@ -98,7 +98,7 @@ export default function WorkPage() {
           </div>
           
           <header style={{marginBottom: '80px'}}>
-            <h1 className="text-3xl md:text-5xl" style={{color: 'var(--foreground)', lineHeight: '48px', transform: 'translateY(-6px)', marginBottom: '40px'}}>Work</h1>
+            <h1 className="text-3xl md:text-5xl" style={{color: 'var(--foreground)', lineHeight: '48px', transform: 'translateY(-6px)', marginBottom: '40px'}}>Works</h1>
           </header>
 
           {/* FILTER プレイスホルダー */}
@@ -175,7 +175,7 @@ export default function WorkPage() {
         </div>
         
         <header style={{marginBottom: '80px'}}>
-          <h1 className="text-3xl md:text-5xl" style={{color: 'var(--foreground)', lineHeight: '48px', transform: 'translateY(-6px)', marginBottom: '40px'}}>Work</h1>
+          <h1 className="text-3xl md:text-5xl" style={{color: 'var(--foreground)', lineHeight: '48px', transform: 'translateY(-6px)', marginBottom: '40px'}}>Works</h1>
         </header>
 
         {/* スキルフィルター */}
