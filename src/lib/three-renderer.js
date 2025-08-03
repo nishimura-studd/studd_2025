@@ -50,12 +50,15 @@ class ThreeRenderer {
 
       // カメラセットアップ
       this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000);
-      this.camera.position.set(0, 20, 0); // Start high above looking down
-      this.camera.lookAt(0, 0, 0); // Look at center/ground
+      this.camera.position.set(0, 50, 0); // Start higher above looking up
       
       // カメラシステム初期化
       this.cameraSystem = new CameraSystem(this.camera, this.scene);
       this.cameraSystem.init();
+      
+      // CameraSystem初期化後に再度上空を向くように設定
+      this.camera.position.set(0, 50, 0);
+      this.camera.lookAt(0, 100, 0); // Look up at the sky (opposite direction from ground)
 
       // ガイド球体システム初期化
       this.guideSphere = new GuideSphere(this.scene);
@@ -123,8 +126,10 @@ class ThreeRenderer {
     // Begin stats monitoring
     this.sceneManager.beginStats();
     
-    // Update sphere movement and rotation
-    this.guideSphere.updateMovement(deltaTime);
+    // Update sphere movement and rotation only if animation is active
+    if (this.isCameraAnimationActive) {
+      this.guideSphere.updateMovement(deltaTime);
+    }
     
     // Update object animations
     this.objectSpawner.updateObjectAnimations(deltaTime);
@@ -140,6 +145,10 @@ class ThreeRenderer {
         this.directionalLight,
         deltaTime
       );
+    } else {
+      // Keep camera looking up at the sky until audio is initialized
+      this.camera.position.set(0, 50, 0);
+      this.camera.lookAt(0, 100, 0);
     }
     
     // Render the scene

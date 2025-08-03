@@ -59,6 +59,11 @@ class DrumSync3DApp {
       this.drumSystem.startRandomSwitchingLoop();
       console.log('ループが自動開始されました');
       
+      // ThreeRendererにカメラアニメーション開始を通知
+      if (this.threeRenderer) {
+        this.threeRenderer.setMusicStartTime();
+      }
+      
       this.audioInitialized = true;
     } catch (error) {
       console.error('ドラムシステムの初期化に失敗:', error);
