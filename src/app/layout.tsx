@@ -17,8 +17,47 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Portfolio",
-  description: "A minimal portfolio in Swiss design style",
+  title: {
+    default: "studd. | スタッド.",
+    template: "%s | studd."
+  },
+  description: "インタラクティブなUI開発に取り組み、モダンな技術を活用してWebアプリケーションを制作しています。",
+  keywords: ["Kuniyoshi Nishimura", "西村國芳", "studd", "studdjp", "スタッド", "portfolio", "web development", "3D visualization", "audio visualization"],
+  authors: [{ name: "studd" }],
+  creator: "studd",
+  publisher: "studd",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://studd.jp'),
+  alternates: {
+    canonical: '/'
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'ja_JP',
+    url: '/',
+    title: 'studd. | スタッド.',
+    description: 'インタラクティブなUI開発に取り組み、モダンな技術を活用してWebアプリケーションを制作しています。',
+    siteName: 'studd. Portfolio'
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'studd. | スタッド.',
+    description: 'インタラクティブなUI開発に取り組み、モダンな技術を活用してWebアプリケーションを制作しています。'
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  verification: {
+    // google: 'your-google-verification-code',
+    // other: 'your-other-verification-code',
+  }
 };
 
 export default function RootLayout({
@@ -27,7 +66,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="ja">
       <body
         className={`${inter.variable} ${geistMono.variable} antialiased`}
         style={{background: 'var(--background)'}}
