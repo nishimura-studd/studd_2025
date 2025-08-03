@@ -28,12 +28,12 @@ export default function WorkDetail({ params }: WorkDetailProps) {
           ? await getWorkByIdAPI(resolvedParams.id)
           : await getPublicWorkByIdAPI(resolvedParams.id)
         if (!data) {
-          setError('作品が見つかりませんでした')
+          setError('Project not found')
           return
         }
         setWork(data)
       } catch (err) {
-        setError('作品データの取得に失敗しました')
+        setError('プロジェクトデータの取得に失敗しました')
         console.error(err)
       } finally {
         setLoading(false)
@@ -100,23 +100,33 @@ export default function WorkDetail({ params }: WorkDetailProps) {
     return (
       <div className="min-h-screen flex justify-center pt-8 md:pt-10" style={{background: 'var(--background)'}}>
         <div className="max-w-4xl w-full" style={{paddingLeft: '24px', paddingRight: '24px'}}>
-          <div className="text-center">
-            <h1 className="text-3xl md:text-5xl font-light" style={{color: 'var(--foreground)', lineHeight: '48px', transform: 'translateY(-6px)', marginBottom: '40px'}}>エラー</h1>
-            <p className="text-sm md:text-base" style={{color: 'var(--foreground-muted)', lineHeight: '28px', marginBottom: '40px'}}>{error}</p>
-            <button
-              onClick={() => router.back()}
-              className="text-sm font-light hover:opacity-70 transition-opacity duration-200"
-              style={{
-                background: 'transparent',
-                color: 'var(--foreground)',
-                border: 'none',
-                padding: 0,
-                textDecoration: 'underline'
-              }}
-            >
-              戻る
-            </button>
+          <div style={{marginBottom: '100px'}}>
+            <nav style={{height: '20px', alignItems: 'baseline'}}>
+              <button
+                onClick={() => router.push('/')}
+                className="text-sm font-light hover:opacity-70 transition-opacity duration-200 flex items-center"
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  color: 'var(--foreground)',
+                  lineHeight: '20px',
+                  padding: 0,
+                  transform: 'translateX(-2px)',
+                  cursor: 'pointer'
+                }}
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{marginRight: '8px'}}>
+                  <path d="M15 18l-6-6 6-6"/>
+                </svg>
+                Back to Home
+              </button>
+            </nav>
           </div>
+
+          <header>
+            <h1 className="text-3xl md:text-5xl font-light" style={{color: 'var(--foreground)', lineHeight: '1.4', transform: 'translateY(-6px)'}}>404 Error</h1>
+            <p className="text-sm md:text-base ml-3 md:ml-5" style={{color: 'var(--foreground-muted)', lineHeight: '28px', transform: 'translateY(-2px)', marginTop: '-40px'}}>{error}</p>
+          </header>
         </div>
       </div>
     )
