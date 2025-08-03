@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useMemo } from 'react'
 import Link from 'next/link'
+import { useSearchParams, useRouter } from 'next/navigation'
 import type { Work } from '@/lib/supabase'
 import { getPublicWorksAPI, getAllWorksAPI } from '@/lib/api'
 import { useAuth } from '@/contexts/AuthContext'
@@ -9,10 +10,15 @@ import WorkItem from '@/app/components/WorkItem'
 import PasswordModal from '@/app/components/PasswordModal'
 
 export default function WorkPage() {
+  const searchParams = useSearchParams()
+  const router = useRouter()
+  
   const [works, setWorks] = useState<Work[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [selectedSkill, setSelectedSkill] = useState<string>('all')
+  const [selectedSkill, setSelectedSkill] = useState<string>(() => {
+    return searchParams.get('filter') || 'all'
+  })
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [, setSelectedWorkId] = useState<string | null>(null)
   const { isAuthenticated } = useAuth()
@@ -50,6 +56,22 @@ export default function WorkPage() {
     }
     return works.filter(work => work.skills.includes(selectedSkill))
   }, [works, selectedSkill])
+
+  // スキルフィルターの変更処理
+  const handleSkillChange = (skill: string) => {
+    setSelectedSkill(skill)
+    
+    // URLを更新
+    const params = new URLSearchParams(searchParams)
+    if (skill === 'all') {
+      params.delete('filter')
+    } else {
+      params.set('filter', skill)
+    }
+    
+    const newUrl = params.toString() ? `?${params.toString()}` : ''
+    router.push(`/works${newUrl}`, { scroll: false })
+  }
 
   // マスクされたプロジェクトのクリック処理
   const handleMaskedClick = (workId: string) => {
@@ -184,7 +206,7 @@ export default function WorkPage() {
             <h2 className="text-sm font-light" style={{color: 'var(--foreground)', lineHeight: '20px', marginBottom: '20px', fontSize: '14px'}}>FILTER</h2>
             <div className="flex flex-wrap gap-2 ml-3 md:ml-5">
               <button
-                onClick={() => setSelectedSkill('all')}
+                onClick={() => handleSkillChange('all')}
                 className={`text-xs font-light ${selectedSkill === 'all' ? '' : 'hover:opacity-70'} transition-opacity duration-200`}
                 style={{
                   background: selectedSkill === 'all' ? 'var(--foreground)' : 'transparent',
@@ -204,7 +226,7 @@ export default function WorkPage() {
                 return (
                   <button
                     key={skill}
-                    onClick={() => setSelectedSkill(skill)}
+                    onClick={() => handleSkillChange(skill)}
                     className={`text-xs font-light ${isSelected ? '' : 'hover:opacity-70'} transition-opacity duration-200`}
                     style={{
                       background: isSelected ? 'var(--foreground)' : 'transparent',
