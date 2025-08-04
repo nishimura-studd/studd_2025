@@ -17,13 +17,13 @@ Next.js 15とSupabaseを使用して構築されたポートフォリオサイ�
 
 ```bash
 # 開発
-npm run dev                    # Turbopack使用で開発サーバー起動
-npm run build                  # 本番用ビルド（静的エクスポート）
+npm run dev                    # Turbopack使用で開発サーバー起動 (http://localhost:3000)
+npm run build                  # 本番用ビルド（静的エクスポート、出力: out/）
+npm run start                  # 本番ビルド後のサーバー起動
 npm run lint                   # ESLint実行
 
 # データインポート（CSV → Supabase）
 npm run import-csv             # 基本的なCSVインポート
-npm run import-with-images     # 画像処理付きCSVインポート
 ```
 
 ## アーキテクチャ概要
@@ -55,14 +55,13 @@ npm run import-with-images     # 画像処理付きCSVインポート
 
 ```typescript
 type Work = {
-  id: string
+  id: number                  // INTEGER PRIMARY KEY
   title: string
   terms: string | null        // "2024/02/06 → 2024/08/10" 形式
   skills: string[]           // 技術タグ
   description: string | null
   is_public: boolean         // マスク動作を制御
-  image_url: string | null   // レガシー単一画像
-  images: string[]          // 新機能：複数画像サポート
+  image_count: number | null // 画像数
   project_url: string | null
   is_masked?: boolean       // APIからのランタイムフラグ
 }
@@ -176,17 +175,30 @@ src/
 - 環境変数はビルド時に埋め込まれる
 
 ### データベーススキーマ注意事項
-- Worksテーブルは`image_url`（レガシー）と`images[]`（新しい複数画像サポート）両方を含む
-- プロジェクトは`terms`フィールドから抽出した開始年でソート: `extract_start_year(terms) DESC`
+- Worksテーブルは`image_count`フィールドで画像数を管理
+- プロジェクトは`id DESC`でソート（新しいIDが上位）
 - 機密テーブル（`admin_config`、`auth_tokens`）でRLS有効
+- `created_at`と`updated_at`フィールドは削除済み
 
-### 認証パスワード
-現在のシステムパスワード: `open sesame`
+### 認証システム詳細
+認証パスワードは別途管理されています。
 
 ## 重要なファイルの場所
 
 - 認証実装詳細: `docs/AUTHENTICATION_IMPLEMENTATION.md`
-- データベース関数: `data/supabase-auth-functions.sql`
-- CSVインポートスクリプト: `scripts/`ディレクトリ
 - Workデータ型定義: `src/lib/supabase.ts`
 - 技術文書一覧: `docs/README.md`
+
+**Supabase関連（Git管理外）:**
+- データベーススキーマ: `supabase/sql/supabase-schema.sql`
+- データベース関数: `supabase/sql/supabase-auth-functions.sql`
+- 関数削除用SQL: `supabase/sql/drop-functions.sql`
+- CSVインポートスクリプト: `supabase/scripts/import-csv.js`
+- サンプルCSVデータ: `supabase/data/works.csv`
+
+## Next.js設定ファイル
+
+- `next.config.ts` - 静的エクスポート設定、画像最適化無効化
+- `tailwindcss` v4 設定 - `postcss.config.mjs`経由
+- TypeScript設定: `tsconfig.json`
+- ESLint設定: `eslint.config.mjs`
