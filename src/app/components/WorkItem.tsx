@@ -4,7 +4,7 @@ import { extractStartYear } from '@/lib/utils'
 
 interface WorkItemProps {
   work: Work
-  onMaskedClick?: (workId: string) => void
+  onMaskedClick?: (workId: number) => void
 }
 
 export default function WorkItem({ work, onMaskedClick }: WorkItemProps) {

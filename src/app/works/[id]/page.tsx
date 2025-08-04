@@ -25,8 +25,8 @@ export default function WorkDetail({ params }: WorkDetailProps) {
       try {
         setLoading(true)
         const data = isAuthenticated 
-          ? await getWorkByIdAPI(resolvedParams.id)
-          : await getPublicWorkByIdAPI(resolvedParams.id)
+          ? await getWorkByIdAPI(Number(resolvedParams.id))
+          : await getPublicWorkByIdAPI(Number(resolvedParams.id))
         if (!data) {
           setError('Project not found')
           return
@@ -174,28 +174,20 @@ export default function WorkDetail({ params }: WorkDetailProps) {
         </header>
 
         {/* 画像エリア */}
-        {work.images && work.images.length > 0 ? (
+        {work.image_count && work.image_count > 0 && (
           <div style={{marginTop: '60px'}}>
-            {work.images.map((imageUrl, index) => (
+            {Array.from({ length: work.image_count }, (_, index) => (
               <img
                 key={index}
-                src={imageUrl}
-                alt={`${work.title} - ${index + 1}`}
+                src={`https://studd.jp/images/works/${work.id}_${index}.png`}
+                alt={`${work.title} - ${index}`}
                 className="w-full aspect-video object-cover rounded-lg"
                 style={{
                   border: '1px solid var(--border)',
-                  marginBottom: index < work.images.length - 1 ? '20px' : '0'
+                  marginBottom: index < work.image_count! - 1 ? '20px' : '0'
                 }}
               />
             ))}
-          </div>
-        ) : work.image_url && (
-          <div style={{marginTop: '60px'}}>
-            <img
-              src={work.image_url}
-              alt={work.title}
-              className="w-full aspect-video object-cover rounded-lg border border-gray-200"
-            />
           </div>
         )}
 

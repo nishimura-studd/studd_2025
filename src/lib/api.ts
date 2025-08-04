@@ -118,7 +118,7 @@ export async function getAllWorksAPI(): Promise<Work[]> {
 /**
  * 特定のIDの作品データを取得（Supabase RPC経由、マスク機能付き）
  */
-export async function getWorkByIdAPI(id: string): Promise<Work | null> {
+export async function getWorkByIdAPI(id: number): Promise<Work | null> {
   try {
     const token = getStoredToken()
     
@@ -163,7 +163,7 @@ export async function getPublicWorksAPI(): Promise<Work[]> {
 /**
  * パスワードなしで特定IDの作品データを取得（マスクされたデータ）
  */
-export async function getPublicWorkByIdAPI(id: string): Promise<Work | null> {
+export async function getPublicWorkByIdAPI(id: number): Promise<Work | null> {
   try {
     const { data, error } = await supabase.rpc('get_work_by_id_with_auth', {
       work_id: id,
