@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useMemo } from 'react'
+import { useEffect, useState, useMemo, Suspense } from 'react'
 import Link from 'next/link'
 import { useSearchParams, useRouter } from 'next/navigation'
 import type { Work } from '@/lib/supabase'
@@ -9,7 +9,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import WorkItem from '@/app/components/WorkItem'
 import PasswordModal from '@/app/components/PasswordModal'
 
-export default function WorkPage() {
+function WorkPageContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   
@@ -74,8 +74,8 @@ export default function WorkPage() {
   }
 
   // マスクされたプロジェクトのクリック処理
-  const handleMaskedClick = (workId: string) => {
-    setSelectedWorkId(workId)
+  const handleMaskedClick = (workId: number) => {
+    setSelectedWorkId(workId.toString())
     setIsModalOpen(true)
   }
 
@@ -280,5 +280,13 @@ export default function WorkPage() {
         />
       </div>
     </div>
+  )
+}
+
+export default function WorkPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <WorkPageContent />
+    </Suspense>
   )
 }
