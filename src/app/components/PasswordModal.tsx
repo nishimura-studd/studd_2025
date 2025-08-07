@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 
+
 interface PasswordModalProps {
   isOpen: boolean
   onClose: () => void
@@ -13,8 +14,54 @@ export default function PasswordModal({ isOpen, onClose, onSuccess }: PasswordMo
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [keyboardVisible, setKeyboardVisible] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
   const { login } = useAuth()
   const buttonRef = useRef<HTMLButtonElement>(null)
+
+  // モバイル判定
+  useEffect(() => {
+    const checkIsMobile = () => {
+      if (typeof window === 'undefined') return false
+      
+      // 複数の条件でモバイル判定
+      const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0
+      const isSmallScreen = window.innerWidth <= 767
+      const isPortrait = window.innerHeight > window.innerWidth
+      const userAgentMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+      
+      return isTouchDevice || isSmallScreen || userAgentMobile || isPortrait
+    }
+    
+    setIsMobile(checkIsMobile())
+  }, [])
+
+  // Visual Viewport API でキーボード検知
+  useEffect(() => {
+    if (!isOpen) return
+    
+    const handleViewportChange = () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      if (typeof window !== 'undefined' && (window as any).visualViewport) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const viewport = (window as any).visualViewport
+        const isKeyboardOpen = viewport.height < window.innerHeight * 0.75
+        setKeyboardVisible(isKeyboardOpen)
+      }
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    if (typeof window !== 'undefined' && (window as any).visualViewport) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const viewport = (window as any).visualViewport
+      viewport.addEventListener('resize', handleViewportChange)
+      handleViewportChange() // Initial check
+      
+      return () => {
+        viewport.removeEventListener('resize', handleViewportChange)
+      }
+    }
+  }, [isOpen])
 
   // パスワード状態変化時にボタンスタイルを更新
   useEffect(() => {
@@ -61,13 +108,13 @@ export default function PasswordModal({ isOpen, onClose, onSuccess }: PasswordMo
 
   return (
     <div 
-      className="fixed inset-0 flex items-center justify-center z-50" 
+      className="fixed inset-0 flex items-center justify-center z-50"
       style={{background: 'rgba(0, 0, 0, 0.5)'}}
       onClick={handleClose}
     >
       <div 
-        className="password-modal-content" 
-        style={{background: '#000000', padding: '20px', minHeight: '300px', position: 'relative'}}
+        className={`password-modal-content ${keyboardVisible ? 'keyboard-visible' : ''} ${isMobile ? 'force-mobile' : ''}`}
+        style={{background: '#000000', padding: '20px', position: 'relative'}}
         onClick={(e) => e.stopPropagation()}
       >
         <button
@@ -89,9 +136,9 @@ export default function PasswordModal({ isOpen, onClose, onSuccess }: PasswordMo
           </svg>
         </button>
 
-        <div className="flex flex-col justify-center" style={{height: 'calc(100% - 40px)', paddingTop: '40px'}}>
-          <form onSubmit={handleSubmit} className="flex flex-col items-center">
-            <div style={{width: '100%', marginBottom: '30px', marginTop: '40px'}}>
+        <div className="flex flex-col justify-center flex-1" style={{paddingTop: '40px'}}>
+          <form onSubmit={handleSubmit} className="flex flex-col items-center h-full justify-center">
+            <div style={{width: '100%', marginBottom: '30px'}}>
               <label htmlFor="password" className="block text-sm font-light" style={{color: '#ffffff', lineHeight: '20px', marginBottom: '16px'}}>
                 PASSWORD :
               </label>
@@ -121,7 +168,6 @@ export default function PasswordModal({ isOpen, onClose, onSuccess }: PasswordMo
                 }}
                 placeholder="パスワードを入力してください"
                 disabled={loading}
-                autoFocus
               />
               <div style={{height: '40px', display: 'flex', alignItems: 'center', marginTop: '4px'}}>
                 {error && (
@@ -177,15 +223,58 @@ export default function PasswordModal({ isOpen, onClose, onSuccess }: PasswordMo
           max-width: 28rem;
           margin: 0 1rem;
           border-radius: 12px;
+          max-height: 90vh;
+          overflow-y: auto;
         }
         
-        @media (max-width: 767px) {
+        /* JavaScript による強制モバイル表示 */
+        .password-modal-content.force-mobile {
+          width: calc(100vw - 40px) !important;
+          height: calc(100dvh - 40px) !important;
+          height: calc(100vh - 40px) !important; /* Fallback for browsers without dvh support */
+          max-width: none !important;
+          max-height: none !important;
+          margin: 20px !important;
+          border-radius: 8px !important;
+          padding: 20px !important;
+          display: flex !important;
+          flex-direction: column !important;
+          overflow-y: auto !important;
+          box-sizing: border-box !important;
+        }
+        
+        .password-modal-content.force-mobile.keyboard-visible {
+          width: calc(100vw - 40px) !important;
+          height: auto !important;
+          min-height: 300px !important;
+          max-height: calc(100vh - 80px) !important;
+          margin: 20px 20px auto 20px !important;
+          border-radius: 8px !important;
+        }
+
+        @media (max-width: 767px), (hover: none) and (pointer: coarse) {
           .password-modal-content {
-            width: 100vw;
-            height: 100vh;
-            max-width: none;
-            margin: 0;
-            border-radius: 0;
+            width: calc(100vw - 40px) !important;
+            height: calc(100dvh - 40px) !important;
+            height: calc(100vh - 40px) !important; /* Fallback for browsers without dvh support */
+            max-width: none !important;
+            max-height: none !important;
+            margin: 20px !important;
+            border-radius: 8px !important;
+            padding: 20px !important;
+            display: flex !important;
+            flex-direction: column !important;
+            overflow-y: auto !important;
+            box-sizing: border-box !important;
+          }
+          
+          .password-modal-content.keyboard-visible {
+            width: calc(100vw - 40px) !important;
+            height: auto !important;
+            min-height: 300px !important;
+            max-height: calc(100vh - 80px) !important;
+            margin: 20px 20px auto 20px !important;
+            border-radius: 8px !important;
           }
         }
       `}</style>

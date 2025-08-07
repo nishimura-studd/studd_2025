@@ -162,6 +162,13 @@ const DrumSync3D: React.FC<DrumSync3DProps> = ({
           z-index: 10;
         }
         
+        @media (max-width: 767px), (hover: none) and (pointer: coarse) {
+          .volume-control-container {
+            bottom: max(120px, calc(env(safe-area-inset-bottom, 34px) + 100px));
+            right: max(20px, env(safe-area-inset-right, 20px));
+          }
+        }
+        
         .play-button {
           padding: 15px 30px;
           background-color: transparent;
