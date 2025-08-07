@@ -105,6 +105,9 @@ export default function PasswordModal({ isOpen, onClose, onSuccess }: PasswordMo
   }
 
   if (!isOpen) return null
+  
+  // モバイル環境ではモーダルを表示しない
+  if (isMobile) return null
 
   return (
     <div 
