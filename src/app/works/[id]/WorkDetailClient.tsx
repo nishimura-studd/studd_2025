@@ -1,7 +1,7 @@
+/* eslint-disable @next/next/no-html-link-for-pages */
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
 import type { Work } from '@/lib/supabase'
 import { getWorkByIdAPI } from '@/lib/api'
 import { useAuth } from '@/contexts/AuthContext'
@@ -12,7 +12,6 @@ interface WorkDetailClientProps {
 }
 
 export default function WorkDetailClient({ workId, initialWork }: WorkDetailClientProps) {
-  const router = useRouter()
   const { isAuthenticated } = useAuth()
   const [work, setWork] = useState<Work | null>(initialWork)
   const [, setLoading] = useState(false)
@@ -52,8 +51,8 @@ export default function WorkDetailClient({ workId, initialWork }: WorkDetailClie
         <div className="max-w-4xl w-full" style={{paddingLeft: '24px', paddingRight: '24px'}}>
           <div style={{marginBottom: '100px'}}>
             <nav style={{height: '20px', alignItems: 'baseline'}}>
-              <button
-                onClick={() => router.push('/works')}
+              <a
+                href="/works"
                 className="text-sm font-light hover:opacity-70 transition-opacity duration-200 flex items-center"
                 style={{
                   background: 'transparent',
@@ -62,14 +61,14 @@ export default function WorkDetailClient({ workId, initialWork }: WorkDetailClie
                   lineHeight: '20px',
                   padding: 0,
                   transform: 'translateX(-2px)',
-                  cursor: 'pointer'
+                  textDecoration: 'none'
                 }}
               >
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{marginRight: '8px'}}>
                   <path d="M15 18l-6-6 6-6"/>
                 </svg>
                 Back to Works
-              </button>
+              </a>
             </nav>
           </div>
 
@@ -87,8 +86,8 @@ export default function WorkDetailClient({ workId, initialWork }: WorkDetailClie
       <div className="max-w-4xl w-full" style={{paddingLeft: '24px', paddingRight: '24px'}}>
         <div style={{marginBottom: '100px'}}>
           <nav style={{height: '20px', alignItems: 'baseline'}}>
-            <button
-              onClick={() => router.push('/works')}
+            <a
+              href="/works"
               className="text-sm font-light hover:opacity-70 transition-opacity duration-200 flex items-center"
               style={{
                 background: 'transparent',
@@ -97,14 +96,14 @@ export default function WorkDetailClient({ workId, initialWork }: WorkDetailClie
                 lineHeight: '20px',
                 padding: 0,
                 transform: 'translateX(-2px)',
-                cursor: 'pointer'
+                textDecoration: 'none'
               }}
             >
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{marginRight: '8px'}}>
                 <path d="M15 18l-6-6 6-6"/>
               </svg>
               Back
-            </button>
+            </a>
           </nav>
         </div>
 

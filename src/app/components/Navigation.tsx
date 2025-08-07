@@ -1,6 +1,6 @@
+/* eslint-disable @next/next/no-html-link-for-pages */
 'use client';
 
-import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 const Navigation = () => {
@@ -15,9 +15,10 @@ const Navigation = () => {
     <>
       {/* Logo */}
       <div className="fixed top-6 left-6 z-50">
-        <Link
+        <a
           href="/"
           className="block hover:opacity-70 transition-opacity duration-200"
+          style={{ textDecoration: 'none' }}
         >
           <div 
             className="text-3xl font-semibold" 
@@ -41,12 +42,12 @@ const Navigation = () => {
           >
             スタッド.
           </div>
-        </Link>
+        </a>
       </div>
       
       {/* About Link */}
       <nav className="fixed top-6 right-6 z-50">
-        <Link
+        <a
           href="/about"
           className="text-sm font-light hover:opacity-70 transition-opacity duration-200"
           style={{
@@ -54,11 +55,12 @@ const Navigation = () => {
             border: 'none',
             color: 'var(--foreground)',
             lineHeight: '20px',
-            padding: 0
+            padding: 0,
+            textDecoration: 'none'
           }}
         >
           about
-        </Link>
+        </a>
       </nav>
     </>
   );

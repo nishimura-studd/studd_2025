@@ -1,4 +1,4 @@
-import Link from 'next/link'
+/* eslint-disable @next/next/no-html-link-for-pages */
 import type { Work } from '@/lib/supabase'
 import { extractStartYear } from '@/lib/utils'
 
@@ -18,13 +18,14 @@ export default function WorkItem({ work, onMaskedClick }: WorkItemProps) {
   }
 
   return (
-    <Link 
+    <a 
       href={`/works/${work.id}`}
       className="block transition-colors duration-200"
       onClick={handleClick}
       style={{
         background: 'var(--background)',
-        border: 'none'
+        border: 'none',
+        textDecoration: 'none'
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.backgroundColor = '#f3f4f6'
@@ -70,6 +71,6 @@ export default function WorkItem({ work, onMaskedClick }: WorkItemProps) {
           </div>
         )}
       </div>
-    </Link>
+    </a>
   )
 }

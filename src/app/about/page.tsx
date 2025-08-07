@@ -1,4 +1,4 @@
-import Link from 'next/link';
+/* eslint-disable @next/next/no-html-link-for-pages */
 
 export default function About() {
   return (
@@ -6,7 +6,7 @@ export default function About() {
       <div className="max-w-4xl w-full" style={{paddingLeft: '24px', paddingRight: '24px'}}>
         <div style={{marginBottom: '100px'}}>
           <nav style={{height: '20px', alignItems: 'baseline'}}>
-            <Link 
+            <a 
             href="/" 
             className="text-sm font-light hover:opacity-70 transition-opacity duration-200 flex items-center"
             style={{
@@ -15,14 +15,15 @@ export default function About() {
               color: 'var(--foreground)',
               lineHeight: '20px',
               padding: 0,
-              transform: 'translateX(-2px)'
+              transform: 'translateX(-2px)',
+              textDecoration: 'none'
             }}
             >
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{marginRight: '8px'}}>
               <path d="M15 18l-6-6 6-6"/>
             </svg>
             Back
-            </Link>
+            </a>
           </nav>
         </div>
         <h1 className="text-3xl md:text-5xl" style={{color: 'var(--foreground)', lineHeight: '48px', transform: 'translateY(-6px)', marginBottom: '80px'}}>About</h1>
@@ -31,10 +32,10 @@ export default function About() {
           <article>
             <h2 className="text-xl md:text-2xl" style={{color: 'var(--foreground)', lineHeight: '32px', transform: 'translateY(-3px)', marginBottom: '40px'}}>Profile</h2>
             <p className="text-sm md:text-base mb-10 md:mb-16 ml-3 md:ml-5" style={{color: 'var(--foreground-muted)', lineHeight: '28px', transform: 'translateY(-2px)'}}>
-            西村 國芳<br/><br/>20年以上にわたり、インタラクティブな UI の開発に取り組んできました。<Link href="/works?filter=Flash" className="underline hover:opacity-70 transition-opacity duration-200" style={{color: 'var(--foreground)'}}>Flash</Link> 全盛期からスタートし、現在はモダンなフロントエンド技術を使って、Web 上でアイデアを形にする<Link href="/works" className="underline hover:opacity-70 transition-opacity duration-200" style={{color: 'var(--foreground)'}}>仕事</Link>を続けています。キャンペーンサイトやブランドサイト、業務用の Web アプリなど、さまざまな分野での実績があります。<Link href="/works?filter=TypeScript" className="underline hover:opacity-70 transition-opacity duration-200" style={{color: 'var(--foreground)'}}>TypeScript</Link> や <Link href="/works?filter=Three.js" className="underline hover:opacity-70 transition-opacity duration-200" style={{color: 'var(--foreground)'}}>Three.js</Link>（WebGL）などの技術も活用し、デザイナーやバックエンドエンジニアと連携しながら、安定した品質と表現力のあるプロダクト開発を目指しています。
+            西村 國芳<br/><br/>20年以上にわたり、インタラクティブな UI の開発に取り組んできました。<a href="/works?filter=Flash" className="underline hover:opacity-70 transition-opacity duration-200" style={{color: 'var(--foreground)'}}>Flash</a> 全盛期からスタートし、現在はモダンなフロントエンド技術を使って、Web 上でアイデアを形にする<a href="/works" className="underline hover:opacity-70 transition-opacity duration-200" style={{color: 'var(--foreground)'}}>仕事</a>を続けています。キャンペーンサイトやブランドサイト、業務用の Web アプリなど、さまざまな分野での実績があります。<a href="/works?filter=TypeScript" className="underline hover:opacity-70 transition-opacity duration-200" style={{color: 'var(--foreground)'}}>TypeScript</a> や <a href="/works?filter=Three.js" className="underline hover:opacity-70 transition-opacity duration-200" style={{color: 'var(--foreground)'}}>Three.js</a>（WebGL）などの技術も活用し、デザイナーやバックエンドエンジニアと連携しながら、安定した品質と表現力のあるプロダクト開発を目指しています。
             </p>
             <p className="text-sm md:text-base ml-3 md:ml-5" style={{color: 'var(--foreground-muted)', lineHeight: '28px', marginBottom: '0px', transform: 'translateY(-2px)'}}>
-            Kuniyoshi Nishimura<br/><br/>I have been engaged in interactive UI development for over 20 years. Starting in the era when <Link href="/works?filter=Flash" className="underline hover:opacity-70 transition-opacity duration-200" style={{color: 'var(--foreground)'}}>Flash</Link> was dominant, I have continued to bring creative ideas to life on the web using modern front-end technologies. My <Link href="/works" className="underline hover:opacity-70 transition-opacity duration-200" style={{color: 'var(--foreground)'}}>works</Link> span a wide range of projects, including campaign sites, brand sites, and business-oriented web applications. I use technologies such as <Link href="/works?filter=TypeScript" className="underline hover:opacity-70 transition-opacity duration-200" style={{color: 'var(--foreground)'}}>TypeScript</Link> and <Link href="/works?filter=Three.js" className="underline hover:opacity-70 transition-opacity duration-200" style={{color: 'var(--foreground)'}}>Three.js</Link> (WebGL), and collaborate closely with designers and backend engineers to deliver products that balance stability, quality, and expressive design.
+            Kuniyoshi Nishimura<br/><br/>I have been engaged in interactive UI development for over 20 years. Starting in the era when <a href="/works?filter=Flash" className="underline hover:opacity-70 transition-opacity duration-200" style={{color: 'var(--foreground)'}}>Flash</a> was dominant, I have continued to bring creative ideas to life on the web using modern front-end technologies. My <a href="/works" className="underline hover:opacity-70 transition-opacity duration-200" style={{color: 'var(--foreground)'}}>works</a> span a wide range of projects, including campaign sites, brand sites, and business-oriented web applications. I use technologies such as <a href="/works?filter=TypeScript" className="underline hover:opacity-70 transition-opacity duration-200" style={{color: 'var(--foreground)'}}>TypeScript</a> and <a href="/works?filter=Three.js" className="underline hover:opacity-70 transition-opacity duration-200" style={{color: 'var(--foreground)'}}>Three.js</a> (WebGL), and collaborate closely with designers and backend engineers to deliver products that balance stability, quality, and expressive design.
             </p>
           </article>
 

@@ -1,7 +1,7 @@
+/* eslint-disable @next/next/no-html-link-for-pages */
 'use client'
 
 import { useEffect, useState, useMemo, Suspense } from 'react'
-import Link from 'next/link'
 import { useSearchParams, useRouter } from 'next/navigation'
 import type { Work } from '@/lib/supabase'
 import { getPublicWorksAPI, getAllWorksAPI } from '@/lib/api'
@@ -99,7 +99,7 @@ function WorkPageContent() {
         <div className="max-w-4xl w-full" style={{paddingLeft: '24px', paddingRight: '24px'}}>
           <div style={{marginBottom: '100px'}}>
             <nav style={{height: '20px', alignItems: 'baseline'}}>
-              <Link 
+              <a 
                 href="/" 
                 className="text-sm font-light hover:opacity-70 transition-opacity duration-200 flex items-center"
                 style={{
@@ -108,14 +108,15 @@ function WorkPageContent() {
                   color: 'var(--foreground)',
                   lineHeight: '20px',
                   padding: 0,
-                  transform: 'translateX(-2px)'
+                  transform: 'translateX(-2px)',
+                  textDecoration: 'none'
                 }}
               >
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{marginRight: '8px'}}>
                   <path d="M15 18l-6-6 6-6"/>
                 </svg>
                 Home
-              </Link>
+              </a>
             </nav>
           </div>
           
@@ -176,7 +177,7 @@ function WorkPageContent() {
       <div className="max-w-4xl w-full" style={{paddingLeft: '24px', paddingRight: '24px'}}>
         <div style={{marginBottom: '100px'}}>
           <nav style={{height: '20px', alignItems: 'baseline'}}>
-            <Link 
+            <a 
               href="/" 
               className="text-sm font-light hover:opacity-70 transition-opacity duration-200 flex items-center"
               style={{
@@ -185,14 +186,15 @@ function WorkPageContent() {
                 color: 'var(--foreground)',
                 lineHeight: '20px',
                 padding: 0,
-                transform: 'translateX(-2px)'
+                transform: 'translateX(-2px)',
+                textDecoration: 'none'
               }}
             >
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{marginRight: '8px'}}>
                 <path d="M15 18l-6-6 6-6"/>
               </svg>
               Home
-            </Link>
+            </a>
           </nav>
         </div>
         
