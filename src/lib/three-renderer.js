@@ -87,7 +87,7 @@ class ThreeRenderer {
       this.animate();
 
       this.isInitialized = true;
-      console.log('Three.js renderer initialized with guide sphere and all models');
+      // Three.js renderer initialized with guide sphere and all models
 
     } catch (error) {
       console.error('ThreeRenderer initialization failed:', error);
@@ -106,7 +106,7 @@ class ThreeRenderer {
   }
 
   setMusicStartTime() {
-    console.log('Music started - enabling camera animation');
+    // Music started - enabling camera animation
     this.isCameraAnimationActive = true;
   }
 
@@ -181,7 +181,7 @@ class ThreeRenderer {
     }
     
     this.isInitialized = false;
-    console.log('Three.js renderer disposed');
+    // Three.js renderer disposed
   }
 }
 

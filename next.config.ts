@@ -11,7 +11,13 @@ const nextConfig: NextConfig = {
   assetPrefix: '',
   // 完全静的サイト用設定
   generateBuildId: () => 'studd-static',
-  compress: false
+  compress: false,
+  // 本番ビルドでconsoleログを削除
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production' ? {
+      exclude: ['error', 'warn']
+    } : false
+  }
 };
 
 export default nextConfig;
