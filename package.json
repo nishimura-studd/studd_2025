@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build",
+    "build": "next build && node scripts/post-build-spa.js",
+    "build:next": "next build",
     "start": "next start",
     "lint": "next lint",
     "import-csv": "node supabase/scripts/import-csv.js"
