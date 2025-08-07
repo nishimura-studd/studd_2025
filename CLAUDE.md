@@ -17,13 +17,17 @@ Next.js 15とSupabaseを使用して構築されたポートフォリオサイ�
 
 ```bash
 # 開発
-npm run dev                    # Turbopack使用で開発サーバー起動 (http://localhost:3000)
-npm run build                  # 本番用ビルド（静的エクスポート、出力: out/）
-npm run start                  # 本番ビルド後のサーバー起動
+npm run dev                    # Turbopack使用で開発サーバー起動
+npm run build                  # 本番用ビルド（静的エクスポート） + レンタルサーバー用設定
+npm run build:next             # Next.jsビルドのみ（post-build無し）
+npm run start                  # 本番サーバー起動（注意：静的エクスポート時は使用不可）
 npm run lint                   # ESLint実行
 
-# データインポート（CSV → Supabase）
-npm run import-csv             # 基本的なCSVインポート
+# 静的サイト確認
+npx serve out                  # ローカルで静的サイトをプレビュー
+
+# データ管理
+npm run import-csv             # CSVファイルからSupabaseにデータインポート
 ```
 
 ## アーキテクチャ概要
@@ -169,36 +173,75 @@ src/
 
 **セキュリティ注意**: これらはRLS（Row Level Security）で保護されているため、静的ビルドで公開されても安全です。
 
+### 静的サイト生成（SSG）アーキテクチャ
+
+**ビルドプロセス:**
+1. `next build` - App Router使用でSSG生成（82個の作品詳細ページを含む）
+2. `generateStaticParams()` - Supabaseから作品IDを取得し静的パラメータ生成
+3. `post-build-spa.js` - レンタルサーバー用の.htaccessファイル生成
+
+**生成されるファイル:**
+- `out/index.html` - ホームページ（DrumSync3D）
+- `out/about.html` - aboutページ
+- `out/works.html` - 作品一覧ページ
+- `out/works/[1-82].html` - 各作品詳細ページ（事前レンダリング済み）
+- `out/.htaccess` - App Router用リライトルール
+
+### サーバー・クライアント分離パターン
+
+**works/[id]/page.tsx:**
+- Server Component: `generateStaticParams()` + 初期データ取得
+- Client Component: `WorkDetailClient.tsx` で認証後の動的データ更新
+
 ### デプロイ設定
-- **対象**: レンタルサーバーホスティング用静的サイト生成
-- **ビルド出力**: `npm run build`後の`out/`ディレクトリ
-- 環境変数はビルド時に埋め込まれる
+- **対象**: レンタルサーバー（Apache）
+- **ビルド出力**: `out/`ディレクトリをそのままアップロード
+- **認証後データ更新**: クライアントサイドでSupabase APIから再取得
 
 ### データベーススキーマ注意事項
-- Worksテーブルは`image_count`フィールドで画像数を管理
-- プロジェクトは`id DESC`でソート（新しいIDが上位）
-- 機密テーブル（`admin_config`、`auth_tokens`）でRLS有効
-- `created_at`と`updated_at`フィールドは削除済み
+- `image_count`フィールドで画像数管理（`https://studd.jp/images/works/{id}_{index}.png`）
+- プロジェクトソート: `id DESC`（最新IDが上位表示）
+- RLS有効テーブル: `admin_config`, `auth_tokens`
 
 ### 認証システム詳細
 認証パスワードは別途管理されています。
 
-## 重要なファイルの場所
+## 重要な開発ノート
 
-- 認証実装詳細: `docs/AUTHENTICATION_IMPLEMENTATION.md`
-- Workデータ型定義: `src/lib/supabase.ts`
-- 技術文書一覧: `docs/README.md`
+### App Router + 静的エクスポートの制約
+- `npm run start`は`output: 'export'`設定時に使用不可
+- 開発時は`npm run dev`、本番確認は`npx serve out`を使用
+- 動的ルート`works/[id]`は`generateStaticParams()`で静的化
 
-**Supabase関連（Git管理外）:**
-- データベーススキーマ: `supabase/sql/supabase-schema.sql`
-- データベース関数: `supabase/sql/supabase-auth-functions.sql`
-- 関数削除用SQL: `supabase/sql/drop-functions.sql`
-- CSVインポートスクリプト: `supabase/scripts/import-csv.js`
-- サンプルCSVデータ: `supabase/data/works.csv`
+### 認証システムの二重構造
+- **静的HTML**: 公開データ（マスク済み）を事前レンダリング
+- **認証後**: クライアントサイドでフルデータに動的更新
+- パスワード認証により`AuthContext`の`isAuthenticated`がトリガー
 
-## Next.js設定ファイル
+### 3D音響システムの初期化
+- Web Audio APIはユーザーインタラクション必須
+- DrumSync3Dコンテナ内クリックで音声開始
+- ナビゲーションリンククリックでは音声非開始
 
-- `next.config.ts` - 静的エクスポート設定、画像最適化無効化
-- `tailwindcss` v4 設定 - `postcss.config.mjs`経由
-- TypeScript設定: `tsconfig.json`
-- ESLint設定: `eslint.config.mjs`
+### パフォーマンス最適化
+- 82個の作品詳細ページを事前生成（SEO最適化）
+- 画像は外部URL（`https://studd.jp/images/works/`）参照
+- Three.jsオブジェクト数制限（100個）で自動クリーンアップ
+
+## 重要なファイル
+
+### コア設定
+- `next.config.ts` - 静的エクスポート + レンタルサーバー設定
+- `scripts/post-build-spa.js` - .htaccess生成とSPA対応
+- `src/lib/supabase.ts` - データ型定義とクライアント設定
+- `src/lib/api.ts` - 認証分岐APIレイヤー
+
+### 認証システム
+- `src/contexts/AuthContext.tsx` - グローバル認証状態
+- `src/app/components/PasswordModal.tsx` - ログインUI
+- `src/app/works/[id]/WorkDetailClient.tsx` - 認証後データ更新
+
+### 3D音響システム
+- `src/lib/DrumSync3DApp.js` - アプリケーション統合
+- `src/lib/three-renderer.js` - Three.js統合ポイント
+- `src/lib/sounds/sound-engine.js` - Web Audio合成エンジン
