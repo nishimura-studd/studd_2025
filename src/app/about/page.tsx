@@ -1,5 +1,7 @@
 /* eslint-disable @next/next/no-html-link-for-pages */
 
+import { BUILD_TIME } from '@/generated/build-time';
+
 export default function About() {
   return (
     <div className="min-h-screen flex justify-center pt-8 md:pt-10" style={{background: 'var(--background)'}}>
@@ -111,6 +113,12 @@ export default function About() {
               
             </div>
           </article>
+        </div>
+        
+        <div className="mt-26 mb-8 text-right">
+          <p className="text-xs text-gray-400 opacity-50 italic">
+            last update: {BUILD_TIME}
+          </p>
         </div>
       </div>
     </div>

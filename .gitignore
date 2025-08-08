@@ -45,3 +45,6 @@ next-env.d.ts
 
 # supabase files (SQL schema, CSV data, scripts)
 /supabase
+
+# generated files
+/src/generated/
