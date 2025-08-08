@@ -53,28 +53,13 @@ const DrumSync3D: React.FC<DrumSync3DProps> = ({
         appRef.current = app;
         setIsInitialized(true);
 
-        // 自動開始が有効な場合、コンテナクリック後に自動初期化
-        if (autoStart && !audioInitialized && containerRef.current) {
-          containerRef.current.addEventListener('click', handleAutoInit, { once: true });
-        }
+        // 自動開始機能を無効化（ボタンクリックのみで音声初期化）
 
       } catch (error) {
         console.error('DrumSync3D初期化エラー:', error);
       }
     };
 
-    const handleAutoInit = async () => {
-      if (appRef.current && !audioInitialized) {
-        try {
-          console.log('音声自動初期化を開始...');
-          await appRef.current.initAudio();
-          setAudioInitialized(true);
-          console.log('音声自動初期化完了');
-        } catch (error) {
-          console.error('音声自動初期化エラー:', error);
-        }
-      }
-    };
 
     initApp();
 
@@ -83,11 +68,7 @@ const DrumSync3D: React.FC<DrumSync3DProps> = ({
       if (appRef.current) {
         appRef.current.dispose();
       }
-      // イベントリスナーのクリーンアップ
-      if (containerRef.current) {
-        containerRef.current.removeEventListener('click', handleAutoInit);
-      }
-      document.removeEventListener('click', handleAutoInit);
+      // イベントリスナーのクリーンアップは不要（自動初期化を無効化したため）
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [autoStart]);
