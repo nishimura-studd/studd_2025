@@ -97,7 +97,20 @@ export default function WorkDetailClient({ workId, initialWork }: WorkDetailClie
           </div>
 
           <div className="flex items-center justify-center" style={{minHeight: '200px'}}>
-            <p style={{color: 'var(--foreground-muted)', fontSize: '16px'}}>Loading...</p>
+            <div className="spinner" style={{
+              width: '24px',
+              height: '24px',
+              border: '2px solid #e5e5e5',
+              borderTop: '2px solid #999999',
+              borderRadius: '50%',
+              animation: 'spin 1s linear infinite'
+            }}></div>
+            <style jsx>{`
+              @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+              }
+            `}</style>
           </div>
         </div>
       </div>
