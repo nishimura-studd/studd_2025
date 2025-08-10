@@ -3,7 +3,7 @@
 
 import { useEffect, useState } from 'react'
 import type { Work } from '@/lib/supabase'
-import { getWorkByIdAPI } from '@/lib/api'
+import { getWorkByIdAPI, getPublicWorkByIdAPI } from '@/lib/api'
 import { useAuth } from '@/contexts/AuthContext'
 
 interface WorkDetailClientProps {
@@ -14,37 +14,97 @@ interface WorkDetailClientProps {
 export default function WorkDetailClient({ workId, initialWork }: WorkDetailClientProps) {
   const { isAuthenticated } = useAuth()
   const [work, setWork] = useState<Work | null>(initialWork)
-  const [, setLoading] = useState(false)
+  const [loading, setLoading] = useState(!initialWork) // initialWorkがnullならローディング中
   const [error, setError] = useState<string | null>(null)
+  const [hasRefetchedAuth, setHasRefetchedAuth] = useState(false)
 
+  // 初回データ取得
   useEffect(() => {
     if (!initialWork) {
-      setError('Project not found')
-      return
-    }
-
-    // 認証状態が変わった場合、データを再取得
-    async function refetchWork() {
-      if (!isAuthenticated) return
-      
-      try {
-        setLoading(true)
-        const data = await getWorkByIdAPI(Number(workId))
-        if (data) {
-          setWork(data)
+      const fetchInitialData = async () => {
+        try {
+          setLoading(true)
+          console.log('[CLIENT] Fetching work data for ID:', workId)
+          
+          const data = await getPublicWorkByIdAPI(Number(workId))
+          console.log('[CLIENT] Fetched work data:', data)
+          
+          if (data) {
+            setWork(data)
+          } else {
+            setError('Project not found')
+          }
+        } catch (err) {
+          console.error('[CLIENT] Failed to fetch work:', err)
+          setError('Failed to load project')
+        } finally {
+          setLoading(false)
         }
-      } catch (err) {
-        console.error('Failed to refetch work:', err)
-      } finally {
-        setLoading(false)
       }
+      fetchInitialData()
+    } else {
+      setWork(initialWork)
     }
+  }, [workId, initialWork])
 
-    if (isAuthenticated && initialWork.is_masked) {
+  // 認証状態変更時の再取得（1回のみ）
+  useEffect(() => {
+    if (isAuthenticated && work && work.is_masked && !hasRefetchedAuth) {
+      const refetchWork = async () => {
+        try {
+          setLoading(true)
+          const data = await getWorkByIdAPI(Number(workId))
+          if (data) {
+            setWork(data)
+            setHasRefetchedAuth(true)
+          }
+        } catch (err) {
+          console.error('Failed to refetch work:', err)
+        } finally {
+          setLoading(false)
+        }
+      }
       refetchWork()
     }
-  }, [isAuthenticated, workId, initialWork])
+  }, [isAuthenticated, workId, work, hasRefetchedAuth])
 
+  // ローディング中の表示
+  if (loading) {
+    return (
+      <div className="min-h-screen flex justify-center pt-8 md:pt-10" style={{background: 'var(--background)'}}>
+        <div className="max-w-4xl w-full" style={{paddingLeft: '24px', paddingRight: '24px'}}>
+          <div style={{marginBottom: '100px'}}>
+            <nav style={{height: '20px', alignItems: 'baseline'}}>
+              <a
+                href="/works"
+                className="text-sm font-light hover:opacity-70 transition-opacity duration-200 flex items-center"
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  color: 'var(--foreground)',
+                  lineHeight: '20px',
+                  padding: 0,
+                  transform: 'translateX(-2px)',
+                  textDecoration: 'none'
+                }}
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{marginRight: '8px'}}>
+                  <path d="M15 18l-6-6 6-6"/>
+                </svg>
+                Back
+              </a>
+            </nav>
+          </div>
+
+          <div className="flex items-center justify-center" style={{minHeight: '200px'}}>
+            <p style={{color: 'var(--foreground-muted)', fontSize: '16px'}}>Loading...</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // エラー時の表示
   if (error || !work) {
     return (
       <div className="min-h-screen flex justify-center pt-8 md:pt-10" style={{background: 'var(--background)'}}>
@@ -124,9 +184,11 @@ export default function WorkDetailClient({ workId, initialWork }: WorkDetailClie
         </header>
 
         {/* 画像エリア */}
-        {work.image_count && work.image_count > 0 && (
-          <div style={{marginTop: '60px'}}>
-            {Array.from({ length: work.image_count }, (_, index) => (
+        {(() => {
+          const imageCount = work.image_count === null ? 0 : Number(work.image_count) || 0;
+          return imageCount > 0 && (
+            <div style={{marginTop: '60px'}}>
+              {Array.from({ length: imageCount }, (_, index) => (
               <img
                 key={index}
                 src={`https://studd.jp/images/works/${work.id}_${index}.jpg`}
@@ -134,12 +196,20 @@ export default function WorkDetailClient({ workId, initialWork }: WorkDetailClie
                 className="w-full object-contain"
                 style={{
                   border: '1px solid var(--border)',
-                  marginBottom: index < work.image_count! - 1 ? '20px' : '0'
+                  marginBottom: index < imageCount - 1 ? '20px' : '0'
+                }}
+                onError={(e) => {
+                  console.error(`Failed to load image: https://studd.jp/images/works/${work.id}_${index}.jpg`);
+                  e.currentTarget.style.display = 'none';
+                }}
+                onLoad={() => {
+                  console.log(`Successfully loaded image: https://studd.jp/images/works/${work.id}_${index}.jpg`);
                 }}
               />
-            ))}
-          </div>
-        )}
+              ))}
+            </div>
+          );
+        })()}
 
         {/* 詳細情報 */}
         <div className="space-y-8">

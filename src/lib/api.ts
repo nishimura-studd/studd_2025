@@ -165,19 +165,38 @@ export async function getPublicWorksAPI(): Promise<Work[]> {
  */
 export async function getPublicWorkByIdAPI(id: number): Promise<Work | null> {
   try {
+    console.log(`[API] Getting work ID ${id} from Supabase...`)
     const { data, error } = await supabase.rpc('get_work_by_id_with_auth', {
       work_id: id,
       auth_token: null
     })
     
     if (error) {
-      console.error('作品データの取得に失敗しました:', error)
+      console.error('[API] Supabase RPC error:', error)
+      console.error('[API] Error details:', {
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code
+      })
       return null
     }
     
-    return data?.[0] || null
+    console.log(`[API] Supabase returned:`, JSON.stringify(data, null, 2))
+    const result = data?.[0] || null
+    
+    if (result && result.image_count === null) {
+      console.warn(`[API] WARNING: Supabase returned image_count: null for work ID ${id}`)
+    }
+    
+    return result
   } catch (error) {
-    console.error('作品データの取得に失敗しました:', error)
+    console.error('[API] Exception in getPublicWorkByIdAPI:', error)
+    console.error('[API] Exception details:', {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+      name: error instanceof Error ? error.name : 'UnknownError'
+    })
     return null
   }
 }

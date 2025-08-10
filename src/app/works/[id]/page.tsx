@@ -1,4 +1,4 @@
-import { getPublicWorkByIdAPI, getPublicWorksAPI } from '@/lib/api'
+import { getPublicWorksAPI } from '@/lib/api'
 import WorkDetailClient from './WorkDetailClient'
 
 // 静的エクスポート用のパラメータ生成
@@ -23,13 +23,6 @@ interface WorkDetailProps {
 export default async function WorkDetail({ params }: WorkDetailProps) {
   const resolvedParams = await params
   
-  // サーバーサイドで初期データを取得
-  let initialWork = null
-  try {
-    initialWork = await getPublicWorkByIdAPI(Number(resolvedParams.id))
-  } catch (error) {
-    console.error('Failed to fetch work:', error)
-  }
-
-  return <WorkDetailClient workId={resolvedParams.id} initialWork={initialWork} />
+  // 完全にクライアントサイドレンダリングに変更（DB更新対応）
+  return <WorkDetailClient workId={resolvedParams.id} initialWork={null} />
 }
