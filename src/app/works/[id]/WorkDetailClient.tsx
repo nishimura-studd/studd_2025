@@ -117,7 +117,9 @@ export default function WorkDetailClient({ workId, initialWork }: WorkDetailClie
             )}
           </div>
           {work.terms && (
-            <p className="text-sm md:text-base ml-3 md:ml-5" style={{color: 'var(--foreground-muted)', lineHeight: '28px', transform: 'translateY(-2px)', marginTop: '-40px'}}>{work.terms.replace(/\s*→\s*/g, ' 〜 ')}</p>
+            <p className="text-sm md:text-base ml-3 md:ml-5" style={{color: 'var(--foreground-muted)', lineHeight: '28px', transform: 'translateY(-2px)', marginTop: '-40px'}}>
+              {work.terms.includes('→') ? work.terms.replace(/\s*→\s*/g, ' 〜 ') : work.terms + ' 〜'}
+            </p>
           )}
         </header>
 
@@ -129,7 +131,7 @@ export default function WorkDetailClient({ workId, initialWork }: WorkDetailClie
                 key={index}
                 src={`https://studd.jp/images/works/${work.id}_${index}.png`}
                 alt={`${work.title} - ${index}`}
-                className="w-full aspect-video object-cover rounded-lg"
+                className="w-full object-contain"
                 style={{
                   border: '1px solid var(--border)',
                   marginBottom: index < work.image_count! - 1 ? '20px' : '0'
