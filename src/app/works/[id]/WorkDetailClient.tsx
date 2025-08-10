@@ -129,7 +129,7 @@ export default function WorkDetailClient({ workId, initialWork }: WorkDetailClie
             {Array.from({ length: work.image_count }, (_, index) => (
               <img
                 key={index}
-                src={`https://studd.jp/images/works/${work.id}_${index}.png`}
+                src={`https://studd.jp/images/works/${work.id}_${index}.jpg`}
                 alt={`${work.title} - ${index}`}
                 className="w-full object-contain"
                 style={{
