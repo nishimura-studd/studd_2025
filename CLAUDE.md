@@ -28,6 +28,9 @@ npx serve out                  # ローカルで静的サイトをプレビュ�
 
 # データ管理
 npm run import-csv             # CSVファイルからSupabaseにデータインポート
+
+# デバッグ・開発支援
+Ctrl+G                         # デザイングリッド表示切替（DesignGrid）
 ```
 
 ## アーキテクチャ概要
@@ -55,6 +58,17 @@ npm run import-csv             # CSVファイルからSupabaseにデータイン
 - localStorageによるトークン管理と自動有効期限切れ
 - 認証レベルの異なる同一エンドポイント用デュアルAPIパターン
 
+**直接データアクセス（`lib/works.ts`）:**
+- `getPublicWorks()` / `getAllWorks()` - Supabase直接アクセス関数
+- `getWorkById(id)` - 単一作品取得
+- `getWorksBySkill(skill)` - スキル絞り込み検索
+- Server Componentでの静的生成時に使用
+
+**ストレージ管理（`lib/storage.ts`）:**
+- `SupabaseStorage` クラス - 画像アップロード機能
+- `uploadImage()` / `uploadMultipleImages()` - 作品画像管理
+- work-imagesバケットへの自動アップロード
+
 ### Workデータモデル
 
 ```typescript
@@ -79,6 +93,12 @@ type Work = {
 - `three-renderer.js` - 3Dレンダリングシステムの統合ポイント
 - `drum-system.js` - Web Audio APIベースの音響システム
 
+**インタラクティブコントローラーシステム:**
+- `InteractiveController.tsx` - PADベースのドラムコントローラーUI（4x4グリッド）
+- `PadButton.tsx` - 個別PADコンポーネント（カテゴリ別色分け、レスポンシブ対応）
+- キーボードマッピング: Q-I行（上段）、A-K行（下段）でPAD操作
+- 自動モード↔インタラクティブモード切替機能
+
 **3Dレンダリングモジュール（`lib/three/`）:**
 - `scene-manager.js` - シーン、ライティング、地面、Stats.js統合
 - `camera-system.js` - ガイドスフィア追従カメラ（軌道運動 + 動的高度変化）
@@ -102,6 +122,12 @@ type Work = {
 - `app/works/page.tsx` - フィルタリング + 認証モーダル付きプロジェクトリスト
 - `app/works/[id]/page.tsx` - 複数画像サポート付きプロジェクト詳細ビュー
 
+**インタラクティブコントローラーUI:**
+- PC版: 2行8列レイアウト + カテゴリ別凡例表示
+- タブレット版: 4行4列レイアウト（768px以下）
+- SP版: 4行4列レイアウト、凡例・キーボード表記非表示、×ボタンデザイン
+- レスポンシブPADサイズ調整とタッチ操作最適化
+
 **ナビゲーション設計:**
 - ホーム: 左上「studd. / スタッド.」ロゴ + 右上「about」リンク
 - 他ページ: ナビゲーション非表示、各ページ内で独自ナビゲーション
@@ -119,14 +145,19 @@ src/
 ├── app/                    # Next.js App Routerページ
 │   ├── components/        # 共有UIコンポーネント
 │   │   ├── DrumSync3D.tsx   # 3D音響ビジュアライゼーション
+│   │   ├── InteractiveController.tsx # PADベースドラムコントローラー
+│   │   ├── PadButton.tsx    # 個別PADコンポーネント
 │   │   ├── Navigation.tsx   # 条件付きナビゲーション
 │   │   ├── PasswordModal.tsx # 認証モーダル
-│   │   └── WorkItem.tsx     # プロジェクト表示
+│   │   ├── WorkItem.tsx     # プロジェクト表示
+│   │   └── DesignGrid.tsx   # 開発用グリッド表示（Ctrl+G切替）
 │   ├── about/            # Profile + Skills + Contact統合
 │   └── works/            # Works関連ページ
 ├── contexts/             # React Contextプロバイダー
 ├── lib/                  # コアユーティリティ + 3D/音響システム
-│   ├── api.ts           # Supabase APIラッパー
+│   ├── api.ts           # Supabase APIラッパー（認証付き）
+│   ├── works.ts         # 直接データアクセス関数
+│   ├── storage.ts       # Supabase Storage画像管理
 │   ├── supabase.ts      # クライアント設定 + 型
 │   ├── utils.ts         # ヘルパー関数
 │   ├── DrumSync3DApp.js  # 3D音響アプリケーションコーディネーター
@@ -140,8 +171,13 @@ src/
 │       ├── drum-system.js      # 高レベル音響コーディネーター
 │       ├── sound-engine.js     # 低レベルWeb Audio合成
 │       └── loop-patterns.js    # ドラムパターン定義
+├── generated/            # ビルド時生成ファイル
+│   └── build-time.ts    # ビルド時刻（自動生成）
 ├── data/                 # データベースセットアップ
 │   └── supabase-auth-functions.sql
+├── scripts/             # ビルドスクリプト
+│   ├── generate-build-time.js  # ビルド時刻生成
+│   └── post-build-spa.js       # .htaccess生成
 └── public/
     └── assets/
         └── glb/          # 3Dモデルアセット（16+ GLBファイル）
@@ -176,9 +212,10 @@ src/
 ### 静的サイト生成（SSG）アーキテクチャ
 
 **ビルドプロセス:**
-1. `next build` - App Router使用でSSG生成（82個の作品詳細ページを含む）
-2. `generateStaticParams()` - Supabaseから作品IDを取得し静的パラメータ生成
-3. `post-build-spa.js` - レンタルサーバー用の.htaccessファイル生成
+1. `generate-build-time.js` - ビルド時刻を`src/generated/build-time.ts`に生成
+2. `next build` - App Router使用でSSG生成（82個の作品詳細ページを含む）
+3. `generateStaticParams()` - Supabaseから作品IDを取得し静的パラメータ生成  
+4. `post-build-spa.js` - レンタルサーバー用の.htaccessファイル生成
 
 **生成されるファイル:**
 - `out/index.html` - ホームページ（DrumSync3D）
@@ -223,6 +260,14 @@ src/
 - DrumSync3Dコンテナ内クリックで音声開始
 - ナビゲーションリンククリックでは音声非開始
 
+### インタラクティブコントローラーの操作方法
+- **アクセス**: ホームページ右下のコントローラーアイコンからモード切替
+- **キーボード操作**: 
+  - 上段: Q(kick), W(snare), E(hihat), R(openHihat), T(synthbass), Y(synthlead), U(synthpad), I(808kick)
+  - 下段: A(glitch), S(static), D(distortionblast), F(vocalchop), G(click), H(sequencer), J(metalclick), K(minimalbass)
+- **PADカテゴリ**: DRUMS（赤）、SYNTH（青）、FX（橙）、MINIMAL（緑）
+- **レスポンシブ対応**: PC（2x8）→タブレット（4x4）→SP（4x4、凡例・キー表記非表示）
+
 ### パフォーマンス最適化
 - 82個の作品詳細ページを事前生成（SEO最適化）
 - 画像は外部URL（`https://studd.jp/images/works/`）参照
@@ -233,8 +278,10 @@ src/
 ### コア設定
 - `next.config.ts` - 静的エクスポート + レンタルサーバー設定
 - `scripts/post-build-spa.js` - .htaccess生成とSPA対応
+- `scripts/generate-build-time.js` - ビルド時刻自動生成
 - `src/lib/supabase.ts` - データ型定義とクライアント設定
 - `src/lib/api.ts` - 認証分岐APIレイヤー
+- `src/lib/works.ts` - 直接データアクセス関数（SSG用）
 
 ### 認証システム
 - `src/contexts/AuthContext.tsx` - グローバル認証状態
