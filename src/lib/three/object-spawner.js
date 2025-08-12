@@ -287,6 +287,36 @@ export class ObjectSpawner {
     }
   }
 
+  // 全てのオブジェクトをクリア（インタラクティブモード切り替え時に使用）
+  clearAllObjects() {
+    console.log(`ObjectSpawner: ${this.spawnSystem.spawnedObjects.length}個のオブジェクトをクリアします`);
+    
+    // 各オブジェクトを個別に削除
+    this.spawnSystem.spawnedObjects.forEach((object, index) => {
+      if (object && this.scene) {
+        console.log(`ObjectSpawner: オブジェクト${index + 1}を削除`);
+        this.scene.remove(object);
+        
+        // ジオメトリとマテリアルのメモリ解放
+        if (object.geometry) {
+          object.geometry.dispose();
+        }
+        if (object.material) {
+          if (Array.isArray(object.material)) {
+            object.material.forEach(material => material.dispose());
+          } else {
+            object.material.dispose();
+          }
+        }
+      }
+    });
+    
+    // 配列をクリア
+    this.spawnSystem.spawnedObjects.length = 0;
+    
+    console.log('ObjectSpawner: 全てのオブジェクトをクリアしました');
+  }
+
   dispose() {
     // Clean up spawned objects
     this.spawnSystem.spawnedObjects.forEach(object => {

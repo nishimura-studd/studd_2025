@@ -17,6 +17,11 @@ const nextConfig: NextConfig = {
     removeConsole: process.env.NODE_ENV === 'production' ? {
       exclude: ['error', 'warn']
     } : false
+  },
+  // 開発環境でのhydration警告を抑制（ブラウザ拡張による影響を軽減）
+  reactStrictMode: false,
+  experimental: {
+    suppressHydrationWarning: process.env.NODE_ENV === 'development'
   }
 };
 

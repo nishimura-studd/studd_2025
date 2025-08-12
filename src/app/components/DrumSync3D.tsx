@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import InteractiveController from './InteractiveController';
 
 interface DrumSync3DProps {
   width?: string;
@@ -22,6 +23,37 @@ const VolumeOffIcon = () => (
   </svg>
 );
 
+const ControllerIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+    {/* 4x4 PAD grid layout */}
+    <g transform="translate(3, 3)">
+      {/* First row */}
+      <rect x="0" y="0" width="4" height="4" rx="0.5" />
+      <rect x="5" y="0" width="4" height="4" rx="0.5" />
+      <rect x="10" y="0" width="4" height="4" rx="0.5" />
+      <rect x="15" y="0" width="4" height="4" rx="0.5" />
+      
+      {/* Second row */}
+      <rect x="0" y="5" width="4" height="4" rx="0.5" />
+      <rect x="5" y="5" width="4" height="4" rx="0.5" />
+      <rect x="10" y="5" width="4" height="4" rx="0.5" />
+      <rect x="15" y="5" width="4" height="4" rx="0.5" />
+      
+      {/* Third row */}
+      <rect x="0" y="10" width="4" height="4" rx="0.5" />
+      <rect x="5" y="10" width="4" height="4" rx="0.5" />
+      <rect x="10" y="10" width="4" height="4" rx="0.5" />
+      <rect x="15" y="10" width="4" height="4" rx="0.5" />
+      
+      {/* Fourth row */}
+      <rect x="0" y="15" width="4" height="4" rx="0.5" />
+      <rect x="5" y="15" width="4" height="4" rx="0.5" />
+      <rect x="10" y="15" width="4" height="4" rx="0.5" />
+      <rect x="15" y="15" width="4" height="4" rx="0.5" />
+    </g>
+  </svg>
+);
+
 const DrumSync3D: React.FC<DrumSync3DProps> = ({ 
   width = '100%', 
   height = '100vh',
@@ -34,6 +66,8 @@ const DrumSync3D: React.FC<DrumSync3DProps> = ({
   const [isInitialized, setIsInitialized] = useState(false);
   const [audioInitialized, setAudioInitialized] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
+  const [isInteractiveMode, setIsInteractiveMode] = useState(false);
+  const [showController, setShowController] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -91,6 +125,28 @@ const DrumSync3D: React.FC<DrumSync3DProps> = ({
     setIsMuted(muted);
   };
 
+  const handleInteractiveModeToggle = () => {
+    if (!appRef.current || !audioInitialized) return;
+    
+    if (isInteractiveMode) {
+      // インタラクティブモードを終了
+      appRef.current.setAutoMode();
+      setIsInteractiveMode(false);
+      setShowController(false);
+    } else {
+      // インタラクティブモードを開始
+      appRef.current.setInteractiveMode();
+      setIsInteractiveMode(true);
+      setShowController(true);
+    }
+  };
+
+  const handlePadTrigger = (soundType: string) => {
+    if (!appRef.current || !isInteractiveMode) return;
+    
+    appRef.current.playInteractiveSound(soundType);
+  };
+
   return (
     <div 
       className={`drum-sync-container ${className}`}
@@ -115,12 +171,31 @@ const DrumSync3D: React.FC<DrumSync3DProps> = ({
         </div>
       )}
       
-      {isInitialized && audioInitialized && (
-        <div className="volume-control-container">
-          <button className="volume-button" onClick={handleVolumeToggle}>
-            {isMuted ? <VolumeOffIcon /> : <VolumeOnIcon />}
-          </button>
-        </div>
+      {isInitialized && audioInitialized && !isInteractiveMode && (
+        <>
+          {/* コントローラーアイコンボタン */}
+          <div className="controller-toggle-container">
+            <button className="controller-button" onClick={handleInteractiveModeToggle}>
+              <ControllerIcon />
+            </button>
+          </div>
+          
+          {/* ボリュームコントロール */}
+          <div className="volume-control-container">
+            <button className="volume-button" onClick={handleVolumeToggle}>
+              {isMuted ? <VolumeOffIcon /> : <VolumeOnIcon />}
+            </button>
+          </div>
+        </>
+      )}
+      
+      {/* インタラクティブコントローラー */}
+      {showController && (
+        <InteractiveController
+          onPadTrigger={handlePadTrigger}
+          onClose={handleInteractiveModeToggle}
+          isActive={isInteractiveMode}
+        />
       )}
 
       <style jsx>{`
@@ -136,6 +211,13 @@ const DrumSync3D: React.FC<DrumSync3DProps> = ({
           z-index: 10;
         }
         
+        .controller-toggle-container {
+          position: absolute;
+          bottom: 90px;
+          right: 20px;
+          z-index: 10;
+        }
+        
         .volume-control-container {
           position: absolute;
           bottom: 20px;
@@ -143,9 +225,39 @@ const DrumSync3D: React.FC<DrumSync3DProps> = ({
           z-index: 10;
         }
         
-        @media (max-width: 767px), (hover: none) and (pointer: coarse) {
+        @media (max-width: 768px) and (min-width: 481px) {
+          .controller-toggle-container {
+            bottom: 140px;
+            right: 20px;
+          }
+          
+          .volume-control-container {
+            bottom: 70px;
+            right: 20px;
+          }
+        }
+
+        @media (hover: none) and (pointer: coarse) and (min-width: 769px) {
+          .controller-toggle-container {
+            bottom: max(170px, calc(env(safe-area-inset-bottom, 34px) + 150px));
+            right: max(20px, env(safe-area-inset-right, 20px));
+          }
+          
           .volume-control-container {
             bottom: max(120px, calc(env(safe-area-inset-bottom, 34px) + 100px));
+            right: max(20px, env(safe-area-inset-right, 20px));
+          }
+        }
+
+        /* スマホサイズでインタラクティブモードが1/2になる場合の調整 - ブラウザボトム基準 */
+        @media (max-width: 480px) {
+          .controller-toggle-container {
+            bottom: max(90px, calc(env(safe-area-inset-bottom, 20px) + 70px));
+            right: max(20px, env(safe-area-inset-right, 20px));
+          }
+          
+          .volume-control-container {
+            bottom: max(20px, env(safe-area-inset-bottom, 20px));
             right: max(20px, env(safe-area-inset-right, 20px));
           }
         }
@@ -193,7 +305,7 @@ const DrumSync3D: React.FC<DrumSync3DProps> = ({
           color: white;
         }
         
-        .volume-button {
+        .controller-button, .volume-button {
           width: 60px;
           height: 60px;
           background-color: #333;
@@ -207,17 +319,17 @@ const DrumSync3D: React.FC<DrumSync3DProps> = ({
           transition: all 0.2s ease;
         }
         
-        .volume-button svg {
+        .controller-button svg, .volume-button svg {
           width: 24px;
           height: 24px;
         }
         
-        .volume-button:hover {
+        .controller-button:hover, .volume-button:hover {
           background-color: #555;
           transform: scale(1.1);
         }
         
-        .volume-button:active {
+        .controller-button:active, .volume-button:active {
           background-color: #777;
           transform: scale(0.95);
         }

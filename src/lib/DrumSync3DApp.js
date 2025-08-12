@@ -9,6 +9,25 @@ class DrumSync3DApp {
     this.drumSystem = null;
     this.isInitialized = false;
     this.audioInitialized = false;
+    this.currentMode = 'auto'; // 'auto' | 'interactive'
+    this.soundMapping = {
+      'kick': 'tree',
+      'snare': 'house',
+      'hihat': 'street_light',
+      'openHihat': 'road_diamond',
+      'synthbass': 'utility_pole',
+      'synthlead': 'post',
+      'synthpad': 'crosswalk_stripes',
+      '808kick': 'vending_machine',
+      'glitch': 'guardrail',
+      'static': 'bench',
+      'distortionblast': 'fence',
+      'vocalchop': 'stop',
+      'click': 'bollard',
+      'sequencer': 'hydrant',
+      'metalclick': 'traffic_cone',
+      'minimalbass': 'bus_stop_pole'
+    };
   }
 
   async init() {
@@ -75,6 +94,85 @@ class DrumSync3DApp {
   toggleVolume() {
     if (!this.drumSystem) return false;
     return this.drumSystem.toggleVolume();
+  }
+
+  // インタラクティブモードに切り替え
+  setInteractiveMode() {
+    if (!this.audioInitialized) return;
+    
+    console.log('DrumSync3DApp: インタラクティブモード切り替え開始');
+    
+    this.currentMode = 'interactive';
+    
+    // 1. まずドラムシステムのループを即座に停止
+    if (this.drumSystem) {
+      console.log('DrumSync3DApp: BGMループを停止します');
+      this.drumSystem.stopLoop();
+    }
+    
+    // 2. 次に3Dレンダラーをクリア・切り替え
+    if (this.threeRenderer) {
+      console.log('DrumSync3DApp: 3Dレンダラーを切り替えます');
+      this.threeRenderer.setInteractiveMode();
+    }
+    
+    console.log('DrumSync3DApp: インタラクティブモードに切り替えました');
+  }
+
+  // オートモードに切り替え
+  setAutoMode() {
+    if (!this.audioInitialized) return;
+    
+    this.currentMode = 'auto';
+    
+    // 3Dレンダラーをオートモードに切り替え
+    this.threeRenderer.setAutoMode();
+    
+    // ドラムシステムのループを再開
+    this.drumSystem.startRandomSwitchingLoop();
+    
+    console.log('オートモードに切り替えました');
+  }
+
+  // インタラクティブモードでサウンドを再生
+  playInteractiveSound(soundType) {
+    if (this.currentMode !== 'interactive' || !this.drumSystem) return;
+    
+    console.log(`playInteractiveSound: ${soundType}`);
+    
+    // サウンドタイプから正確なメソッド名にマッピング
+    const soundMethodMap = {
+      'kick': 'playKick',
+      'snare': 'playSnare',
+      'hihat': 'playHihat',
+      'openHihat': 'playOpenHihat',
+      'synthbass': 'playSynthBass',
+      'synthlead': 'playSynthLead',
+      'synthpad': 'playSynthPad',
+      '808kick': 'play808Kick',
+      'glitch': 'playGlitch',
+      'static': 'playStatic',
+      'distortionblast': 'playDistortionBlast',
+      'vocalchop': 'playVocalChop',
+      'click': 'playClick',
+      'sequencer': 'playSequencer',
+      'metalclick': 'playMetalClick',
+      'minimalbass': 'playMinimalBass'
+    };
+    
+    const methodName = soundMethodMap[soundType];
+    
+    if (methodName && typeof this.drumSystem[methodName] === 'function') {
+      console.log(`Calling: ${methodName}`);
+      this.drumSystem[methodName]();
+    } else {
+      console.warn(`Unknown sound type: ${soundType}`);
+    }
+  }
+
+  // 現在のモードを取得
+  getCurrentMode() {
+    return this.currentMode;
   }
 
   // アプリケーション終了

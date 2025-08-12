@@ -286,13 +286,23 @@ export class DrumSystem {
   }
 
   stopLoop() {
+    console.log('ループ停止を開始します');
+    
     this.loopSystem.isLooping = false;
     this.loopSystem.loopCount = 0;
+    
+    // メインのループインターバルを停止
     if (this.loopSystem.loopInterval) {
       clearInterval(this.loopSystem.loopInterval);
       this.loopSystem.loopInterval = null;
     }
-    console.log('ループを停止しました');
+    
+    // LoopPatternsの進行中のタイマーもクリア
+    if (this.loopPatterns) {
+      this.loopPatterns.stopAllPatterns();
+    }
+    
+    console.log('ループを完全に停止しました');
   }
 
   getRandomLoop() {

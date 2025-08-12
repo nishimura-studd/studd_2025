@@ -16,6 +16,7 @@ class ThreeRenderer {
     this.handleResize = null;
     this.isInitialized = false;
     this.isCameraAnimationActive = false; // Camera animation starts only after audio initialization
+    this.isInteractiveMode = false; // インタラクティブモードフラグ
     
     // Delta time for frame-rate independent animation
     this.clock = new THREE.Clock();
@@ -110,6 +111,44 @@ class ThreeRenderer {
     this.isCameraAnimationActive = true;
   }
 
+  // インタラクティブモードに切り替え
+  setInteractiveMode() {
+    if (!this.isInitialized) return;
+    
+    console.log('ThreeRenderer: インタラクティブモード切り替え開始');
+    
+    this.isInteractiveMode = true;
+    
+    // 全ての3Dオブジェクトをクリア
+    if (this.objectSpawner) {
+      console.log('ThreeRenderer: 3Dオブジェクトをクリアします');
+      this.objectSpawner.clearAllObjects();
+    }
+    
+    // ガイドスフィアをインタラクティブモード（z軸直進のみ）に設定
+    if (this.guideSphere) {
+      this.guideSphere.setInteractiveMode();
+    }
+    
+    console.log('ThreeRenderer: インタラクティブモードに切り替えました（ガイド・カメラ動作はオートと同じ）');
+  }
+
+  // オートモードに切り替え
+  setAutoMode() {
+    if (!this.isInitialized) return;
+    
+    this.isInteractiveMode = false;
+    
+    // カメラシステムを元に戻す
+    this.camera.position.set(0, 50, 0);
+    this.camera.lookAt(0, 100, 0);
+    
+    // ガイドスフィアの動きを再開
+    this.guideSphere.setAutoMode();
+    
+    console.log('ThreeRenderer: オートモードに切り替えました');
+  }
+
   onLoopChange() {
     if (!this.isInitialized) return;
     this.guideSphere.onLoopChange();
@@ -126,8 +165,9 @@ class ThreeRenderer {
     // Begin stats monitoring
     this.sceneManager.beginStats();
     
-    // Update sphere movement and rotation only if animation is active
+    // Update sphere movement and rotation if animation is active
     if (this.isCameraAnimationActive) {
+      // オートモード・インタラクティブモード共に同じ動き
       this.guideSphere.updateMovement(deltaTime);
     }
     
@@ -137,8 +177,9 @@ class ThreeRenderer {
     // Update controls (even though disabled, for potential future use)
     this.controls.update();
     
-    // Update camera only if animation is active
+    // Update camera if animation is active
     if (this.isCameraAnimationActive) {
+      // オートモード・インタラクティブモード両方でカメラ追従を継続
       this.cameraSystem.updateCameraFollow(
         this.guideSphere.getSphere(), 
         this.ground, 

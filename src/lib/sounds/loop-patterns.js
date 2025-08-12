@@ -3,6 +3,7 @@ export class LoopPatterns {
   constructor(soundEngine) {
     this.soundEngine = soundEngine;
     this.triggerSoundCallback = null;
+    this.activeTimeouts = []; // 実行中のタイマーを追跡
   }
 
   // コールバック設定
@@ -210,7 +211,7 @@ export class LoopPatterns {
   // パターンを実行
   executePattern(pattern) {
     pattern.forEach(({ time, sound, freq }) => {
-      setTimeout(() => {
+      const timeoutId = setTimeout(() => {
         // 3Dアニメーションコールバック実行
         if (this.triggerSoundCallback) {
           this.triggerSoundCallback(sound);
@@ -236,7 +237,25 @@ export class LoopPatterns {
           case 'vocalchop': this.soundEngine.playVocalChop(); break;
         }
       }, time * 1000);
+      
+      // タイマーIDを記録
+      this.activeTimeouts.push(timeoutId);
     });
+  }
+
+  // 全てのパターンを停止
+  stopAllPatterns() {
+    console.log(`LoopPatterns: ${this.activeTimeouts.length}個のタイマーをクリアします`);
+    
+    // 全てのアクティブなタイマーをクリア
+    this.activeTimeouts.forEach(timeoutId => {
+      clearTimeout(timeoutId);
+    });
+    
+    // タイマーリストをクリア
+    this.activeTimeouts = [];
+    
+    console.log('LoopPatterns: 全てのパターンタイマーを停止しました');
   }
 
   // 利用可能なループタイプを取得

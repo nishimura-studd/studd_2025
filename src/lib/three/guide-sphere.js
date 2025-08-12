@@ -87,6 +87,22 @@ export class GuideSphere {
     return this.guideSphere;
   }
 
+  // インタラクティブモードに設定
+  setInteractiveMode() {
+    // インタラクティブモードでもオートモードと同じ動きを継続
+    console.log('GuideSphere: インタラクティブモード - オートモードと同じ動きを継続します');
+  }
+
+  // オートモードに設定
+  setAutoMode() {
+    // 移動システムをリセット
+    this.sphereMovement.time = 0;
+    this.sphereMovement.currentX = 0;
+    this.sphereMovement.targetX = 0;
+    this.sphereMovement.currentZ = 0;
+    this.sphereMovement.nextRandomTime = 0;
+  }
+
   dispose() {
     if (this.guideSphere && this.scene) {
       this.scene.remove(this.guideSphere);
