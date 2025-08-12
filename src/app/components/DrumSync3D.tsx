@@ -87,7 +87,14 @@ const DrumSync3D: React.FC<DrumSync3DProps> = ({
         appRef.current = app;
         setIsInitialized(true);
 
-        // 自動開始機能を無効化（ボタンクリックのみで音声初期化）
+        // iOSでの初期アドレスバー対策
+        if (/iPhone|iPad|iPod/.test(navigator.userAgent)) {
+          // 少し待ってからアドレスバーを隠す
+          setTimeout(() => {
+            window.scrollTo(0, 1);
+            setTimeout(() => window.scrollTo(0, 0), 50);
+          }, 1000);
+        }
 
       } catch (error) {
         console.error('DrumSync3D初期化エラー:', error);
@@ -113,6 +120,14 @@ const DrumSync3D: React.FC<DrumSync3DProps> = ({
     try {
       await appRef.current.initAudio();
       setAudioInitialized(true);
+      
+      // iOSでアドレスバーを隠すためのトリック
+      if (/iPhone|iPad|iPod/.test(navigator.userAgent)) {
+        setTimeout(() => {
+          window.scrollTo(0, 1);
+          setTimeout(() => window.scrollTo(0, 0), 50);
+        }, 100);
+      }
     } catch (error) {
       console.error('音声初期化エラー:', error);
     }
@@ -199,6 +214,12 @@ const DrumSync3D: React.FC<DrumSync3DProps> = ({
       )}
 
       <style jsx>{`
+        .drum-sync-container {
+          /* iOSのアドレスバー対策 */
+          height: var(--app-height);
+          position: relative;
+        }
+        
         .drum-sync-container canvas {
           display: block;
         }
