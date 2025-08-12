@@ -18,11 +18,8 @@ const nextConfig: NextConfig = {
       exclude: ['error', 'warn']
     } : false
   },
-  // 開発環境でのhydration警告を抑制（ブラウザ拡張による影響を軽減）
-  reactStrictMode: false,
-  experimental: {
-    suppressHydrationWarning: process.env.NODE_ENV === 'development'
-  }
+  // 開発環境でのReact Strict Modeを無効化（hydration警告を軽減）
+  reactStrictMode: process.env.NODE_ENV !== 'development'
 };
 
 export default nextConfig;
