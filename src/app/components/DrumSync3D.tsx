@@ -68,6 +68,7 @@ const DrumSync3D: React.FC<DrumSync3DProps> = ({
   const [isMuted, setIsMuted] = useState(false);
   const [isInteractiveMode, setIsInteractiveMode] = useState(false);
   const [showController, setShowController] = useState(false);
+  const controllerRef = useRef<{ activatePad: (soundType: string) => void } | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -83,6 +84,13 @@ const DrumSync3D: React.FC<DrumSync3DProps> = ({
         await app.init();
         
         if (!mounted) return;
+
+        // PAD同期用のコールバックを設定
+        app.setPadSyncCallback((soundType: string) => {
+          if (controllerRef.current) {
+            controllerRef.current.activatePad(soundType);
+          }
+        });
 
         appRef.current = app;
         setIsInitialized(true);
@@ -207,6 +215,7 @@ const DrumSync3D: React.FC<DrumSync3DProps> = ({
       {/* インタラクティブコントローラー */}
       {showController && (
         <InteractiveController
+          ref={controllerRef}
           onPadTrigger={handlePadTrigger}
           onClose={handleInteractiveModeToggle}
           isActive={isInteractiveMode}

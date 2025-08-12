@@ -230,6 +230,55 @@ p {
   background-size: 20px 20px;
 }
 
+/* Next.js開発サーバーのデバッグボタンを非表示 */
+[data-nextjs-scroll-focus-boundary] + div {
+  display: none !important;
+}
+
+/* より具体的にNext.jsのポップアップを非表示 */
+div[style*="position: fixed"][style*="bottom: 10px"][style*="left: 10px"] {
+  display: none !important;
+}
+
+/* Next.jsの"N"ボタン（開発ツール）を非表示 */
+div[style*="position: fixed"][style*="bottom"][style*="left"] {
+  display: none !important;
+}
+
+/* Next.jsの開発ツールボタン全般を非表示 */
+div[data-nextjs-toast-errors] {
+  display: none !important;
+}
+
+/* Next.jsの開発用オーバーレイを非表示 */
+nextjs-portal {
+  display: none !important;
+}
+
+/* より広範囲でNext.jsの開発ツールを非表示 */
+div[style*="z-index: 2147483647"] {
+  display: none !important;
+}
+
+/* 強制的にNext.js開発ツールを非表示（最終手段） */
+div[style*="position: fixed"]:has(div[style*="background: rgb(17, 17, 17)"]) {
+  display: none !important;
+}
+
+/* Next.js 15の新しい開発ツールボタンを非表示 */
+div[data-nextjs-toast-errors-parent] {
+  display: none !important;
+}
+
+div[data-nextjs-toast-errors-parent] * {
+  display: none !important;
+}
+
+/* 最終手段：全てのNext.js開発ツール要素を強制非表示 */
+*[style*="position: fixed"][style*="bottom"][style*="left"][style*="z-index"] {
+  display: none !important;
+}
+
 @media (max-width: 768px) {
   .swiss-grid {
     grid-template-columns: repeat(6, 1fr);

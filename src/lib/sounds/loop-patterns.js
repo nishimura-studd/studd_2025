@@ -258,9 +258,74 @@ export class LoopPatterns {
     console.log('LoopPatterns: 全てのパターンタイマーを停止しました');
   }
 
+  // ドラムンベースデモループ（4小節）
+  playDrumBassDemo() {
+    const bpm = 174; // D&Bの典型的なBPM
+    const sixteenthNote = 60 / bpm / 4;
+    const barLength = sixteenthNote * 16;
+    
+    const pattern = [
+      // 1小節目 - シンプルなキックとスネア
+      { time: 0, sound: 'kick' },
+      { time: sixteenthNote * 8, sound: 'snare' },
+      
+      // 2小節目 - ベースライン導入
+      { time: barLength, sound: 'kick' },
+      { time: barLength + sixteenthNote * 8, sound: 'snare' },
+      { time: barLength + sixteenthNote * 4, sound: 'synthbass', freq: 55 },
+      { time: barLength + sixteenthNote * 12, sound: 'synthbass', freq: 73 },
+      
+      // 3小節目 - ハイハットパターン追加
+      { time: barLength * 2, sound: 'kick' },
+      { time: barLength * 2 + sixteenthNote * 2, sound: 'hihat' },
+      { time: barLength * 2 + sixteenthNote * 4, sound: 'hihat' },
+      { time: barLength * 2 + sixteenthNote * 6, sound: 'hihat' },
+      { time: barLength * 2 + sixteenthNote * 8, sound: 'snare' },
+      { time: barLength * 2 + sixteenthNote * 10, sound: 'hihat' },
+      { time: barLength * 2 + sixteenthNote * 12, sound: 'hihat' },
+      { time: barLength * 2 + sixteenthNote * 14, sound: 'openHihat' },
+      { time: barLength * 2 + sixteenthNote * 6, sound: 'synthbass', freq: 82 },
+      { time: barLength * 2 + sixteenthNote * 14, sound: 'synthbass', freq: 65 },
+      
+      // 4小節目 - フルパターン
+      { time: barLength * 3, sound: 'kick' },
+      { time: barLength * 3 + sixteenthNote * 1, sound: 'hihat' },
+      { time: barLength * 3 + sixteenthNote * 3, sound: 'hihat' },
+      { time: barLength * 3 + sixteenthNote * 5, sound: 'hihat' },
+      { time: barLength * 3 + sixteenthNote * 7, sound: 'hihat' },
+      { time: barLength * 3 + sixteenthNote * 8, sound: 'snare' },
+      { time: barLength * 3 + sixteenthNote * 9, sound: 'hihat' },
+      { time: barLength * 3 + sixteenthNote * 11, sound: 'hihat' },
+      { time: barLength * 3 + sixteenthNote * 12, sound: 'kick' },
+      { time: barLength * 3 + sixteenthNote * 13, sound: 'hihat' },
+      { time: barLength * 3 + sixteenthNote * 15, sound: 'openHihat' },
+      
+      // ベースライン（4小節目）
+      { time: barLength * 3 + sixteenthNote * 2, sound: 'synthbass', freq: 55 },
+      { time: barLength * 3 + sixteenthNote * 6, sound: 'synthbass', freq: 73 },
+      { time: barLength * 3 + sixteenthNote * 10, sound: 'synthbass', freq: 82 },
+      { time: barLength * 3 + sixteenthNote * 14, sound: 'synthbass', freq: 55 },
+      
+      // リードメロディー（3-4小節目）
+      { time: barLength * 2 + sixteenthNote * 8, sound: 'synthlead', freq: 440 },
+      { time: barLength * 2 + sixteenthNote * 12, sound: 'synthlead', freq: 523 },
+      { time: barLength * 3 + sixteenthNote * 4, sound: 'synthlead', freq: 659 },
+      { time: barLength * 3 + sixteenthNote * 8, sound: 'synthlead', freq: 784 },
+      { time: barLength * 3 + sixteenthNote * 12, sound: 'synthlead', freq: 523 },
+      
+      // パッド（全体を通して）
+      { time: 0, sound: 'synthpad', freq: 110 },
+      { time: barLength, sound: 'synthpad', freq: 146 },
+      { time: barLength * 2, sound: 'synthpad', freq: 164 },
+      { time: barLength * 3, sound: 'synthpad', freq: 110 }
+    ];
+
+    this.executePattern(pattern);
+  }
+
   // 利用可能なループタイプを取得
   getAvailableLoops() {
-    return ['electronica', 'noisy', 'clickhouse', 'jerseyclub'];
+    return ['electronica', 'noisy', 'clickhouse', 'jerseyclub', 'drumbass'];
   }
 }
 

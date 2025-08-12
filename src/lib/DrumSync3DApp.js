@@ -10,6 +10,7 @@ class DrumSync3DApp {
     this.isInitialized = false;
     this.audioInitialized = false;
     this.currentMode = 'auto'; // 'auto' | 'interactive'
+    this.padSyncCallback = null; // PAD同期用コールバック
     this.soundMapping = {
       'kick': 'tree',
       'snare': 'house',
@@ -45,6 +46,11 @@ class DrumSync3DApp {
           this.threeRenderer.setMusicStartTime();
         } else {
           this.threeRenderer.triggerAnimation(soundType);
+          
+          // インタラクティブモード時はPAD同期も実行
+          if (this.currentMode === 'interactive' && this.padSyncCallback) {
+            this.padSyncCallback(soundType);
+          }
         }
       });
 
@@ -90,6 +96,11 @@ class DrumSync3DApp {
     }
   }
 
+  // PAD同期コールバックを設定
+  setPadSyncCallback(callback) {
+    this.padSyncCallback = callback;
+  }
+
   // ボリュームトグル
   toggleVolume() {
     if (!this.drumSystem) return false;
@@ -114,6 +125,14 @@ class DrumSync3DApp {
     if (this.threeRenderer) {
       console.log('DrumSync3DApp: 3Dレンダラーを切り替えます');
       this.threeRenderer.setInteractiveMode();
+    }
+    
+    // 3. ドラムンベースデモを自動開始
+    if (this.drumSystem) {
+      console.log('DrumSync3DApp: ドラムンベースデモを開始します');
+      setTimeout(() => {
+        this.drumSystem.playDrumBassDemo();
+      }, 500); // 少し遅延させて切り替えを確実にする
     }
     
     console.log('DrumSync3DApp: インタラクティブモードに切り替えました');
@@ -186,6 +205,9 @@ class DrumSync3DApp {
       this.drumSystem.dispose();
       this.drumSystem = null;
     }
+    
+    // PAD同期コールバックもクリア
+    this.padSyncCallback = null;
     
     if (this.threeRenderer) {
       this.threeRenderer.dispose();

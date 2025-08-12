@@ -1,12 +1,16 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, forwardRef, useImperativeHandle } from 'react';
 import PadButton from './PadButton';
 
 interface InteractiveControllerProps {
   onPadTrigger: (soundType: string) => void;
   onClose: () => void;
   isActive: boolean;
+}
+
+interface InteractiveControllerRef {
+  activatePad: (soundType: string) => void;
 }
 
 // サウンドマッピング（将来的に使用する可能性があるため保持）
@@ -53,12 +57,28 @@ const getKeyForSound = (soundType: string): string => {
   return Object.keys(KEY_MAPPING).find(key => KEY_MAPPING[key as keyof typeof KEY_MAPPING] === soundType) || '';
 };
 
-const InteractiveController: React.FC<InteractiveControllerProps> = ({
+const InteractiveController = forwardRef<InteractiveControllerRef, InteractiveControllerProps>(({
   onPadTrigger,
   onClose,
   isActive
-}) => {
+}, ref) => {
   const [activePads, setActivePads] = useState<Set<string>>(new Set());
+
+  // 外部からPADをアクティベートする関数を公開
+  useImperativeHandle(ref, () => ({
+    activatePad: (soundType: string) => {
+      setActivePads(prev => new Set(prev).add(soundType));
+      
+      // 200ms後にアクティブ状態を解除
+      setTimeout(() => {
+        setActivePads(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(soundType);
+          return newSet;
+        });
+      }, 200);
+    }
+  }), []);
 
   // キーボードイベント処理
   useEffect(() => {
@@ -538,6 +558,8 @@ const InteractiveController: React.FC<InteractiveControllerProps> = ({
       `}</style>
     </div>
   );
-};
+});
+
+InteractiveController.displayName = 'InteractiveController';
 
 export default InteractiveController;

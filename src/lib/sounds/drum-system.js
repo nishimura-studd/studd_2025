@@ -270,9 +270,25 @@ export class DrumSystem {
       case 'jerseyclub':
         this.loopPatterns.playJerseyClubLoop();
         break;
+      case 'drumbass':
+        this.loopPatterns.playDrumBassDemo();
+        break;
       default:
         this.loopPatterns.playElectronicaLoop();
     }
+  }
+
+  // ドラムンベースデモを再生
+  playDrumBassDemo() {
+    if (!this.isInitialized) return;
+    
+    // 既存のループを停止
+    this.stopLoop();
+    
+    // 4小節のドラムンベースデモを再生
+    this.loopPatterns.playDrumBassDemo();
+    
+    console.log('ドラムンベースデモを開始しました');
   }
 
   switchToRandomLoop() {
