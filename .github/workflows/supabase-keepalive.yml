@@ -1,0 +1,43 @@
+name: Supabase Keep Alive
+
+on:
+  schedule:
+    # 毎日午前9時（UTC）に実行 = 日本時間午後6時
+    - cron: '0 9 * * *'
+  workflow_dispatch: # 手動実行も可能
+
+jobs:
+  keepalive:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Ping Supabase Database
+        env:
+          SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+        run: |
+          echo "🔄 Supabase Keep Alive 開始: $(date -u)"
+          
+          # worksテーブルへの軽量クエリでスリープ回避
+          echo "📊 works テーブルをチェック中..."
+          http_code=$(curl -s -o /dev/null -w "%{http_code}" \
+            -H "apikey: $SUPABASE_ANON_KEY" \
+            -H "Authorization: Bearer $SUPABASE_ANON_KEY" \
+            -H "Content-Type: application/json" \
+            "$SUPABASE_URL/rest/v1/works?select=id&limit=1")
+          
+          echo "HTTP Status: $http_code"
+          
+          if [ "$http_code" = "200" ]; then
+            echo "🎉 Supabase Keep Alive 成功！"
+          else
+            echo "💥 Keep Alive 失敗 (HTTP $http_code)"
+            exit 1
+          fi
+          
+      - name: Log Execution
+        if: always()
+        run: |
+          echo "📅 Keep-alive実行完了: $(date -u)"
+          echo "⏰ 次回実行予定: 24時間後"
+          echo "🌐 監視対象: Supabase REST API直接アクセス"
