@@ -272,6 +272,9 @@ src/
 - 82個の作品詳細ページを事前生成（SEO最適化）
 - 画像は外部URL（`https://studd.jp/images/works/`）参照
 - Three.jsオブジェクト数制限（100個）で自動クリーンアップ
+- **Supabaseパフォーマンス**: RPC関数でレスポンス遅延・タイムアウトが稀に発生
+  - 詳細は `docs/SUPABASE_PERFORMANCE_OPTIMIZATION.md` を参照
+  - 改善案: タイムアウト設定、インデックス追加、キャッシュ実装
 
 ## 重要なファイル
 
@@ -292,3 +295,8 @@ src/
 - `src/lib/DrumSync3DApp.js` - アプリケーション統合
 - `src/lib/three-renderer.js` - Three.js統合ポイント
 - `src/lib/sounds/sound-engine.js` - Web Audio合成エンジン
+
+### ドキュメント
+- `docs/SUPABASE_PERFORMANCE_OPTIMIZATION.md` - Supabaseパフォーマンス最適化案
+- `docs/AUTHENTICATION_IMPLEMENTATION.md` - 認証システム実装詳細
+- `docs/WORKS_UPDATE_GUIDE.md` - 作品データ更新ガイド
