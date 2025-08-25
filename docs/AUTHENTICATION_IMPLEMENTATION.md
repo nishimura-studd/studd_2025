@@ -184,9 +184,7 @@ npm run build
 ```
 
 ## 設定済みパスワード
-```
-open sesame
-```
+パスワード情報は `docs/admin-password.txt` ファイル（git管理外）を参照してください。
 
 ## トラブルシューティング
 
