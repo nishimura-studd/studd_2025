@@ -1,6 +1,6 @@
 {
   "name": "studd_2025",
-  "version": "0.1.0",
+  "version": "1.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -11,8 +11,6 @@
     "import-csv": "node supabase/scripts/import-csv.js"
   },
   "dependencies": {
-    "@react-three/drei": "^10.3.0",
-    "@react-three/fiber": "^9.1.2",
     "@supabase/supabase-js": "^2.50.3",
     "csv-parser": "^3.2.0",
     "dotenv": "^17.0.1",
