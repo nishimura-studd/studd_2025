@@ -11,7 +11,7 @@ Next.js 15とSupabaseを使用して構築されたポートフォリオサイ�
 - Tailwind CSS（スタイリング）
 - Supabase（バックエンド：PostgreSQL + 認証）
 - Three.js + Web Audio API（3D音響ビジュアライゼーション）
-- stats.js（パフォーマンス監視）
+- stats.js（パフォーマンス監視、現在無効化）
 
 ## 開発コマンド
 
@@ -53,6 +53,8 @@ Ctrl+G                         # デザイングリッド表示切替（DesignGr
 - `get_work_by_id_with_auth(id, token?)` - 単一プロジェクト取得
 - `mask_title()` と `mask_description()` - コンテンツマスクユーティリティ
 
+**重要**: 全てのデータアクセスはこれらのRPC関数経由で行われ、直接テーブルアクセスは使用していません。
+
 **TypeScript APIレイヤー（`lib/api.ts`）:**
 - `getPublicWorksAPI()` / `getAllWorksAPI()` - 公開 vs 認証済みデータアクセス
 - localStorageによるトークン管理と自動有効期限切れ
@@ -64,10 +66,9 @@ Ctrl+G                         # デザイングリッド表示切替（DesignGr
 - `getWorksBySkill(skill)` - スキル絞り込み検索
 - Server Componentでの静的生成時に使用
 
-**ストレージ管理（`lib/storage.ts`）:**
-- `SupabaseStorage` クラス - 画像アップロード機能
-- `uploadImage()` / `uploadMultipleImages()` - 作品画像管理
-- work-imagesバケットへの自動アップロード
+**画像管理:**
+- レンタルサーバー側に手動配置
+- `image_count`フィールドで画像数を管理
 
 ### Workデータモデル
 
@@ -157,7 +158,6 @@ src/
 ├── lib/                  # コアユーティリティ + 3D/音響システム
 │   ├── api.ts           # Supabase APIラッパー（認証付き）
 │   ├── works.ts         # 直接データアクセス関数
-│   ├── storage.ts       # Supabase Storage画像管理
 │   ├── supabase.ts      # クライアント設定 + 型
 │   ├── utils.ts         # ヘルパー関数
 │   ├── DrumSync3DApp.js  # 3D音響アプリケーションコーディネーター
@@ -207,7 +207,7 @@ src/
 - `NEXT_PUBLIC_SUPABASE_URL` 
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 
-**セキュリティ注意**: これらはRLS（Row Level Security）で保護されているため、静的ビルドで公開されても安全です。
+**セキュリティ注意**: これらの変数は`NEXT_PUBLIC_`プレフィックス付きのため静的ビルドに含まれます。Supabase anon keyは公開前提で設計されており、RPC関数による適切な認証・マスク処理で保護されています。
 
 ### 静的サイト生成（SSG）アーキテクチャ
 
@@ -236,9 +236,14 @@ src/
 - **認証後データ更新**: クライアントサイドでSupabase APIから再取得
 
 ### データベーススキーマ注意事項
-- `image_count`フィールドで画像数管理（`https://studd.jp/images/works/{id}_{index}.png`）
+- `image_count`フィールドで画像数管理（`https://studd.jp/images/works/{id}_{index}.jpg`）
 - プロジェクトソート: `id DESC`（最新IDが上位表示）
-- RLS有効テーブル: `admin_config`, `auth_tokens`
+- RLS有効テーブル: `admin_config`, `auth_tokens`, `works`
+
+**重要なRLS設定:**
+- `works`テーブルには`USING (true)`ポリシーがあるが、実際のアプリケーションは`get_works_with_auth()`RPC関数経由でアクセス
+- RPC関数内で適切な認証チェックとマスク処理を実装済み
+- 直接テーブルアクセスポリシーは削除可能（セキュリティ向上のため）
 
 ### 認証システム詳細
 認証パスワードは別途管理されています。
@@ -270,7 +275,7 @@ src/
 
 ### パフォーマンス最適化
 - 82個の作品詳細ページを事前生成（SEO最適化）
-- 画像は外部URL（`https://studd.jp/images/works/`）参照
+- 画像は外部URL参照でCDN効果による高速配信
 - Three.jsオブジェクト数制限（100個）で自動クリーンアップ
 - **Supabaseパフォーマンス**: RPC関数でレスポンス遅延・タイムアウトが稀に発生
   - 詳細は `docs/SUPABASE_PERFORMANCE_OPTIMIZATION.md` を参照
@@ -297,6 +302,26 @@ src/
 - `src/lib/sounds/sound-engine.js` - Web Audio合成エンジン
 
 ### ドキュメント
+- `docs/INDEX.md` - 全ドキュメントのインデックス（開発開始時に参照推奨）
 - `docs/SUPABASE_PERFORMANCE_OPTIMIZATION.md` - Supabaseパフォーマンス最適化案
 - `docs/AUTHENTICATION_IMPLEMENTATION.md` - 認証システム実装詳細
 - `docs/WORKS_UPDATE_GUIDE.md` - 作品データ更新ガイド
+- `docs/DRUMSYNC3D_TECHNICAL_IMPLEMENTATION_SPEC.md` - DrumSync3D技術仕様
+- `docs/TECH_APPEAL.md` - 技術概要とアピールポイント
+
+## 開発時の重要な注意事項
+
+### セキュリティチェックリスト
+- `.env.local`ファイルが`.gitignore`で除外されているか確認
+- RPC関数`get_works_with_auth()`による適切なマスク処理が動作することを確認
+- 認証トークンの有効期限（1時間）が適切に管理されているか確認
+
+### デバッグツール
+- Stats.jsは`scene-manager.js:3`で無効化（有効にする場合はコメントアウト解除）
+- DesignGridは`Ctrl+G`で表示切替可能
+- ブラウザ開発者ツールでWeb Audio APIのコンテキスト状態を確認可能
+
+### 追加リソース
+- プロジェクト全体の理解: `docs/INDEX.md`で全ドキュメントを確認
+- 技術的詳細: `docs/TECH_APPEAL.md`で技術アピールポイント参照
+- DrumSync3D詳細: `docs/DRUMSYNC3D_TECHNICAL_IMPLEMENTATION_SPEC.md`参照
