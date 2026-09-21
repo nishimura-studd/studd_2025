@@ -17,7 +17,7 @@ Next.js 15とSupabaseを使用して構築されたポートフォリオサイ�
 
 ```bash
 # 開発
-npm run dev                    # Turbopack使用で開発サーバー起動
+npm run dev                    # 開発サーバー起動
 npm run build                  # 本番用ビルド（静的エクスポート） + レンタルサーバー用設定
 npm run build:next             # Next.jsビルドのみ（post-build無し）
 npm run start                  # 本番サーバー起動（注意：静的エクスポート時は使用不可）
