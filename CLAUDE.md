@@ -218,11 +218,19 @@ src/
 4. `post-build-spa.js` - レンタルサーバー用の.htaccessファイル生成
 
 **生成されるファイル:**
+
+`next.config.ts`の`trailingSlash: true`により、トップページ以外はディレクトリ + `index.html`形式で出力される。
+
 - `out/index.html` - ホームページ（DrumSync3D）
-- `out/about.html` - aboutページ
-- `out/works.html` - 作品一覧ページ
-- `out/works/[1-82].html` - 各作品詳細ページ（事前レンダリング済み）
+- `out/about/index.html` - aboutページ
+- `out/works/index.html` - 作品一覧ページ
+- `out/works/[1-82]/index.html` - 各作品詳細ページ（事前レンダリング済み）
+- `out/404.html` / `out/404/index.html` - 404ページ
+- `out/_next/` - JS/CSSチャンク（`generateBuildId`により固定ID`studd-static`）
+- `out/assets/glb/` - 3Dモデルアセット
 - `out/.htaccess` - App Router用リライトルール
+
+各HTMLと同階層に`index.txt`（RSCペイロード）も出力される。
 
 ### サーバー・クライアント分離パターン
 
