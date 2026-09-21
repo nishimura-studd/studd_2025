@@ -6,11 +6,17 @@ on:
     - cron: '0 9 * * *'
   workflow_dispatch: # 手動実行も可能
 
+permissions:
+  contents: write # keepaliveコミットのpushに必要
+
 jobs:
   keepalive:
     runs-on: ubuntu-latest
-    
+
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Ping Supabase Database
         env:
           SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
@@ -34,7 +40,34 @@ jobs:
             echo "💥 Keep Alive 失敗 (HTTP $http_code)"
             exit 1
           fi
+
+      - name: Prevent Workflow Auto-Disable
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          THRESHOLD_DAYS: 50
+        run: |
+          # GitHubはパブリックリポジトリで60日間活動がないとscheduleを自動無効化する。
+          # しきい値を超えたらタイムスタンプを更新してコミットし、カウンタをリセットする。
+          pushed_at=$(gh api "repos/$GITHUB_REPOSITORY" --jq .pushed_at)
+          idle_days=$(( ( $(date -u +%s) - $(date -u -d "$pushed_at" +%s) ) / 86400 ))
           
+          echo "🕒 最終push: $pushed_at（${idle_days}日前 / しきい値 ${THRESHOLD_DAYS}日）"
+          
+          if [ "$idle_days" -lt "$THRESHOLD_DAYS" ]; then
+            echo "✅ まだ活動が新しいためkeepaliveコミットは不要"
+            exit 0
+          fi
+          
+          echo "⚠️ 自動無効化が近いためkeepaliveコミットを作成"
+          date -u +"%Y-%m-%dT%H:%M:%SZ" > .github/last-keepalive.txt
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .github/last-keepalive.txt
+          git commit -m "chore: keepalive commit to keep scheduled workflow enabled"
+          git push
+          echo "🚀 keepaliveコミットをpushしました"
+
       - name: Log Execution
         if: always()
         run: |
