@@ -14,7 +14,7 @@
     "@supabase/supabase-js": "^2.50.3",
     "csv-parser": "^3.2.0",
     "dotenv": "^17.0.1",
-    "next": "15.4.7",
+    "next": "15.5.25",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "stats.js": "^0.17.0",
@@ -28,8 +28,11 @@
     "@types/react-dom": "^19",
     "@types/three": "^0.177.0",
     "eslint": "^9",
-    "eslint-config-next": "15.3.4",
+    "eslint-config-next": "15.5.25",
     "tailwindcss": "^4",
     "typescript": "^5"
+  },
+  "overrides": {
+    "postcss": "^8.5.28"
   }
 }
